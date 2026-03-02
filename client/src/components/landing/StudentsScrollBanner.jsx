@@ -1,0 +1,307 @@
+import { Star, TrendingUp } from 'lucide-react';
+
+/* ─── Student data ───────────────────────────────────────────── */
+const ROW_1 = [
+  {
+    name: 'ნინო ჯაფარიძე',
+    city: 'Tbilisi',
+    exam: 'ENT 2025',
+    before: 58,
+    after: 91,
+    initials: 'NJ',
+    from: '#7c3aed',
+    to: '#06b6d4',
+    quote: "AI explanations are clearer than any teacher I've ever had.",
+  },
+  {
+    name: 'ლუკა ბერიძე',
+    city: 'Kutaisi',
+    exam: 'ENT 2025',
+    before: 54,
+    after: 83,
+    initials: 'LB',
+    from: '#0891b2',
+    to: '#22d3ee',
+    quote: 'The step-by-step breakdowns finally made algebra click for me.',
+  },
+  {
+    name: 'მარიამ ასათიანი',
+    city: 'Gori',
+    exam: 'ENT 2025',
+    before: 65,
+    after: 92,
+    initials: 'MA',
+    from: '#d97706',
+    to: '#f59e0b',
+    quote: 'Mentora found my weak spots before my own teacher did.',
+  },
+  {
+    name: 'გიორგი მელიქიძე',
+    city: 'Kutaisi',
+    exam: 'ENT 2025',
+    before: 62,
+    after: 87,
+    initials: 'GM',
+    from: '#059669',
+    to: '#34d399',
+    quote: 'Available at 2 AM when I study. Absolute game changer.',
+  },
+  {
+    name: 'ანა ლომიძე',
+    city: 'Telavi',
+    exam: 'ENT 2025',
+    before: 61,
+    after: 89,
+    initials: 'AL',
+    from: '#7c3aed',
+    to: '#a78bfa',
+    quote: 'Went from nearly failing to top of my class in just 6 weeks.',
+  },
+  {
+    name: 'ლევან კობიაშვილი',
+    city: 'Rustavi',
+    exam: 'ENT 2025',
+    before: 53,
+    after: 85,
+    initials: 'LK',
+    from: '#0d9488',
+    to: '#2dd4bf',
+    quote: 'Mock exams made me feel truly ready. No surprises on the day.',
+  },
+  {
+    name: 'გვანცა შარაშიძე',
+    city: 'Batumi',
+    exam: 'ENT 2025',
+    before: 67,
+    after: 93,
+    initials: 'GS',
+    from: '#db2777',
+    to: '#f472b6',
+    quote: 'I studied smarter, not harder — Mentora showed me exactly how.',
+  },
+];
+
+const ROW_2 = [
+  {
+    name: 'სალომე ბახტაძე',
+    city: 'Batumi',
+    exam: 'ENT 2025',
+    before: 55,
+    after: 94,
+    initials: 'SB',
+    from: '#9333ea',
+    to: '#c084fc',
+    quote: 'Fixed my trigonometry gaps in just two weeks. Insane.',
+  },
+  {
+    name: 'ელენე დავითაშვილი',
+    city: 'Tbilisi',
+    exam: 'ENT 2025',
+    before: 70,
+    after: 96,
+    initials: 'ED',
+    from: '#16a34a',
+    to: '#06b6d4',
+    quote: "Scored 96. I couldn't believe it — Mentora made it happen.",
+  },
+  {
+    name: 'ირაკლი ქარჩხაძე',
+    city: 'Poti',
+    exam: 'ENT 2025',
+    before: 60,
+    after: 88,
+    initials: 'IK',
+    from: '#1d4ed8',
+    to: '#60a5fa',
+    quote: 'Best study investment I made for my final exams, by far.',
+  },
+  {
+    name: 'სოფო ხოჯავა',
+    city: 'Akhaltsikhe',
+    exam: 'ENT 2025',
+    before: 63,
+    after: 90,
+    initials: 'SK',
+    from: '#be185d',
+    to: '#fb7185',
+    quote: 'The analytics showed me exactly what to study. Pure gold.',
+  },
+  {
+    name: 'ბაქარ კვარაცხელია',
+    city: 'Sighnaghi',
+    exam: 'ENT 2025',
+    before: 58,
+    after: 84,
+    initials: 'BK',
+    from: '#b45309',
+    to: '#fbbf24',
+    quote: 'Personalized practice is what sets Mentora apart from the rest.',
+  },
+  {
+    name: 'მარინე ჩხეიძე',
+    city: 'Zugdidi',
+    exam: 'ENT 2025',
+    before: 44,
+    after: 77,
+    initials: 'MC',
+    from: '#4d7c0f',
+    to: '#86efac',
+    quote: "My family couldn't afford a tutor. Mentora changed everything.",
+  },
+  {
+    name: 'ნიკა გელაშვილი',
+    city: 'Ozurgeti',
+    exam: 'ENT 2025',
+    before: 59,
+    after: 86,
+    initials: 'NG',
+    from: '#0e7490',
+    to: '#38bdf8',
+    quote: 'I went from dreading math to genuinely enjoying every session.',
+  },
+];
+
+/* ─── Single card ─────────────────────────────────────────────── */
+function StudentCard({ name, city, exam, before, after, initials, from, to, quote }) {
+  const gain = after - before;
+
+  return (
+    <div
+      className="relative flex-shrink-0 w-[300px] rounded-2xl border border-dark-border bg-dark-card p-5 flex flex-col gap-4 overflow-hidden group"
+      style={{ background: 'linear-gradient(135deg, #12122a 0%, #0d0d1f 100%)' }}
+    >
+      {/* Subtle card glow on hover */}
+      <div
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at top left, ${from}18, transparent 65%)`,
+        }}
+      />
+
+      {/* Top — avatar + name */}
+      <div className="flex items-center gap-3 relative">
+        <div
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-lg"
+          style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
+        >
+          {initials}
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-white truncate leading-tight">{name}</p>
+          <p className="text-xs text-slate-500 mt-0.5 truncate">{city} · {exam}</p>
+        </div>
+      </div>
+
+      {/* Stars */}
+      <div className="flex items-center gap-0.5 relative">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} size={11} className="text-amber-400 fill-amber-400" />
+        ))}
+      </div>
+
+      {/* Quote */}
+      <p className="text-sm text-slate-300 leading-relaxed italic flex-1 relative">
+        "{quote}"
+      </p>
+
+      {/* Score pill */}
+      <div className="flex items-center gap-2 relative pt-3 border-t border-dark-border">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500 font-mono">{before}</span>
+          <div className="flex items-center gap-1">
+            <div className="h-px w-8" style={{ background: `linear-gradient(to right, ${from}, ${to})` }} />
+            <TrendingUp size={12} style={{ color: to }} />
+          </div>
+          <span
+            className="text-base font-extrabold font-mono"
+            style={{ background: `linear-gradient(90deg, ${from}, ${to})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          >
+            {after}
+          </span>
+        </div>
+        <div
+          className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full"
+          style={{
+            background: `${from}25`,
+            color: to,
+            border: `1px solid ${from}40`,
+          }}
+        >
+          +{gain} pts
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main export ─────────────────────────────────────────────── */
+export default function StudentsScrollBanner() {
+  const doubled1 = [...ROW_1, ...ROW_1];
+  const doubled2 = [...ROW_2, ...ROW_2];
+
+  return (
+    <section className="py-20 relative overflow-hidden">
+      {/* Ambient background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-primary-600/6 blur-[120px] rounded-full" />
+      </div>
+
+      {/* Section header */}
+      <div className="text-center mb-12 px-6 relative">
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          Real Students · Real Results
+        </span>
+        <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-3">
+          Thousands of students are{' '}
+          <span className="gradient-text">scoring higher</span>
+        </h2>
+        <p className="text-slate-400 text-base max-w-xl mx-auto">
+          From Tbilisi to Batumi — Georgian students improve an average of{' '}
+          <span className="text-white font-semibold">+27 points</span> in under a month.
+        </p>
+      </div>
+
+      {/* Scroll rows — both pause together on hover over the wrapper */}
+      <div className="scroll-pause space-y-4 relative">
+
+        {/* Left-to-right fade masks */}
+        <div className="absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-dark-bg via-dark-bg/90 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-dark-bg via-dark-bg/90 to-transparent z-10 pointer-events-none" />
+
+        {/* Row 1 — scrolls left */}
+        <div className="overflow-hidden">
+          <div className="animate-scroll-left flex gap-4 w-max">
+            {doubled1.map((student, i) => (
+              <StudentCard key={i} {...student} />
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — scrolls right */}
+        <div className="overflow-hidden">
+          <div className="animate-scroll-right flex gap-4 w-max">
+            {doubled2.map((student, i) => (
+              <StudentCard key={i} {...student} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom stat strip */}
+      <div className="mt-12 flex flex-wrap items-center justify-center gap-8 px-6 relative">
+        {[
+          { value: '12,400+', label: 'Active students' },
+          { value: '+27 pts', label: 'Average score gain' },
+          { value: '4 weeks', label: 'Avg. time to improvement' },
+          { value: '4.9 ★', label: 'Student rating' },
+        ].map(({ value, label }) => (
+          <div key={label} className="text-center">
+            <p className="text-xl font-extrabold gradient-text">{value}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tail:*)",
+      "Bash(true:*)",
+      "Bash(grep:*)",
+      "Bash(cd C:\\\\Users\\\\User\\\\Desktop\\\\Mentora\\\\client:*)",
+      "Bash(cd:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}
