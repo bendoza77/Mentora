@@ -1,12 +1,14 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import usePageTitle from '../hooks/usePageTitle';
 import {
   Clock, ChevronLeft, ChevronRight, Flag, CheckCircle,
-  ClipboardCheck, AlertTriangle, TrendingUp, RotateCcw,
+  ClipboardCheck, AlertTriangle, TrendingUp, RotateCcw, Lock, Zap,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
+import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer,
@@ -57,10 +59,35 @@ function QuestionNav({ questions, answers, flagged, current, onSelect }) {
   );
 }
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function ExamSim() {
   usePageTitle('Exam Simulation');
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  // ── Plan / monthly exam usage ───────────────────────────────────────────────
+  const isFree = user?.plan === 'free' || !user?.plan;
+  const [examPlanData, setExamPlanData] = useState({ thisMonthExams: 0, monthlyExamLimit: null });
+  const examLimitReached = isFree && examPlanData.monthlyExamLimit !== null
+    && examPlanData.thisMonthExams >= examPlanData.monthlyExamLimit;
+
+  // Fetch on mount so the select screen knows the monthly count
+  useEffect(() => {
+    if (!isFree) return;
+    fetch(`${SERVER_URL}/api/users/stats/me`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status === 'success') {
+          setExamPlanData({
+            thisMonthExams:   d.data.thisMonthExams   ?? 0,
+            monthlyExamLimit: d.data.monthlyExamLimit ?? 1,
+          });
+        }
+      })
+      .catch(() => {});
+  }, [isFree]);
 
   const {
     phase,
@@ -152,31 +179,62 @@ export default function ExamSim() {
           </div>
         </div>
 
-        {/* Start exam card */}
-        <div
-          className="glass rounded-2xl border border-primary-500/30 p-6 cursor-pointer group hover:border-primary-500/60 transition-all"
-          onClick={handleStart}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-bold text-white group-hover:text-primary-300 transition-colors">
-                {topicFilter === 'All' ? 'Full Math Exam' : `${topicFilter} Exam`}
-              </h3>
-              <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
-                <span className="flex items-center gap-1.5">
-                  <ClipboardCheck size={13} /> {qCount} questions
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock size={13} /> ~{durationMins} min
-                </span>
-                <Badge variant="ghost">
-                  {topicFilter === 'All' ? 'Mixed Topics' : 'Topic Focus'}
-                </Badge>
+        {/* Start exam card — locked if free user hit monthly limit */}
+        {examLimitReached ? (
+          <div className="rounded-2xl border border-primary-500/20 bg-primary-600/5 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Lock size={15} className="text-primary-400" />
+                  <h3 className="text-base font-bold text-white">Monthly Exam Limit Reached</h3>
+                </div>
+                <p className="text-sm text-slate-400 mt-1">
+                  Free plan allows <span className="text-white font-semibold">1 mock exam per month</span>.
+                  You've already used yours this month.
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Used: {examPlanData.thisMonthExams}/{examPlanData.monthlyExamLimit} this month
+                </p>
               </div>
+              <Link
+                to="/pricing"
+                className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-accent-500 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <Zap size={14} /> Upgrade to Pro
+              </Link>
             </div>
-            <Button variant="gradient" size="sm">{t('exam.start')}</Button>
           </div>
-        </div>
+        ) : (
+          <div
+            className="glass rounded-2xl border border-primary-500/30 p-6 cursor-pointer group hover:border-primary-500/60 transition-all"
+            onClick={handleStart}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-white group-hover:text-primary-300 transition-colors">
+                  {topicFilter === 'All' ? 'Full Math Exam' : `${topicFilter} Exam`}
+                </h3>
+                <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
+                  <span className="flex items-center gap-1.5">
+                    <ClipboardCheck size={13} /> {qCount} questions
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={13} /> ~{durationMins} min
+                  </span>
+                  <Badge variant="ghost">
+                    {topicFilter === 'All' ? 'Mixed Topics' : 'Topic Focus'}
+                  </Badge>
+                  {isFree && examPlanData.monthlyExamLimit !== null && (
+                    <span className="text-xs text-amber-400 font-medium">
+                      {examPlanData.thisMonthExams}/{examPlanData.monthlyExamLimit} used this month
+                    </span>
+                  )}
+                </div>
+              </div>
+              <Button variant="gradient" size="sm">{t('exam.start')}</Button>
+            </div>
+          </div>
+        )}
 
         {/* Topic overview grid */}
         <div>

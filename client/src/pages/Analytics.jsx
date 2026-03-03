@@ -8,6 +8,7 @@ import {
 import { TrendingUp, TrendingDown, BrainCircuit, Target, Zap, AlertTriangle, Flame } from 'lucide-react';
 import Card, { CardHeader, CardTitle } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
+import PlanGate from '../components/ui/PlanGate';
 import clsx from 'clsx';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -256,32 +257,35 @@ export default function Analytics() {
                     </div>
                 </Card>
 
-                {/* Skills Radar */}
-                <Card className="border-dark-border">
-                    <CardHeader>
-                        <CardTitle>Skills Radar</CardTitle>
-                    </CardHeader>
-                    {!hasTopics ? (
-                        <div className="h-[200px] flex items-center justify-center">
-                            <p className="text-xs text-slate-600 text-center px-4">
-                                Solve problems across topics to see your skills map.
-                            </p>
-                        </div>
-                    ) : (
-                        <ResponsiveContainer width="100%" height={200}>
-                            <RadarChart data={radarData} margin={{ top: 0, right: 20, bottom: 0, left: 20 }}>
-                                <PolarGrid stroke="rgba(255,255,255,0.06)" />
-                                <PolarAngleAxis dataKey="topic" tick={{ fill: '#64748b', fontSize: 10 }} />
-                                <Radar dataKey="score" stroke="#7c3aed" fill="#7c3aed" fillOpacity={0.25} strokeWidth={2} />
-                            </RadarChart>
-                        </ResponsiveContainer>
-                    )}
-                </Card>
+                {/* Skills Radar — Pro+ */}
+                <PlanGate minPlan="pro" compact>
+                    <Card className="border-dark-border">
+                        <CardHeader>
+                            <CardTitle>Skills Radar</CardTitle>
+                        </CardHeader>
+                        {!hasTopics ? (
+                            <div className="h-[200px] flex items-center justify-center">
+                                <p className="text-xs text-slate-600 text-center px-4">
+                                    Solve problems across topics to see your skills map.
+                                </p>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={200}>
+                                <RadarChart data={radarData} margin={{ top: 0, right: 20, bottom: 0, left: 20 }}>
+                                    <PolarGrid stroke="rgba(255,255,255,0.06)" />
+                                    <PolarAngleAxis dataKey="topic" tick={{ fill: '#64748b', fontSize: 10 }} />
+                                    <Radar dataKey="score" stroke="#7c3aed" fill="#7c3aed" fillOpacity={0.25} strokeWidth={2} />
+                                </RadarChart>
+                            </ResponsiveContainer>
+                        )}
+                    </Card>
+                </PlanGate>
             </div>
 
-            {/* Topic breakdown */}
+            {/* Topic breakdown — Pro+ */}
             <div className="grid xl:grid-cols-2 gap-5">
                 {/* Topic Heatmap */}
+                <PlanGate minPlan="pro" compact>
                 <Card className="border-dark-border">
                     <CardHeader>
                         <CardTitle>{t('analytics.heatmap')}</CardTitle>
@@ -327,72 +331,77 @@ export default function Analytics() {
                         </div>
                     )}
                 </Card>
+                </PlanGate>
 
-                {/* AI Recommendations — driven by real topic data */}
-                <Card className="border-dark-border">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <BrainCircuit size={16} className="text-primary-400" />
-                            <CardTitle>{t('analytics.recommendations')}</CardTitle>
-                        </div>
-                        <Badge variant="primary" dot>AI</Badge>
-                    </CardHeader>
-                    {recommendations.length === 0 ? (
-                        <div className="py-10 text-center">
-                            <p className="text-sm text-slate-500">
-                                {hasTopics
-                                    ? 'All topics looking strong! Keep it up.'
-                                    : 'Solve problems to get AI recommendations.'}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="space-y-3">
-                            {recommendations.map(({ icon: Icon, color, bg, title, desc }) => (
-                                <div key={title} className={`rounded-xl border ${bg} p-4 flex gap-3`}>
-                                    <div className="w-8 h-8 rounded-lg bg-dark-card flex items-center justify-center shrink-0">
-                                        <Icon size={16} className={color} />
+                {/* AI Recommendations — Pro+ */}
+                <PlanGate minPlan="pro" compact>
+                    <Card className="border-dark-border">
+                        <CardHeader>
+                            <div className="flex items-center gap-2">
+                                <BrainCircuit size={16} className="text-primary-400" />
+                                <CardTitle>{t('analytics.recommendations')}</CardTitle>
+                            </div>
+                            <Badge variant="primary" dot>AI</Badge>
+                        </CardHeader>
+                        {recommendations.length === 0 ? (
+                            <div className="py-10 text-center">
+                                <p className="text-sm text-slate-500">
+                                    {hasTopics
+                                        ? 'All topics looking strong! Keep it up.'
+                                        : 'Solve problems to get AI recommendations.'}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {recommendations.map(({ icon: Icon, color, bg, title, desc }) => (
+                                    <div key={title} className={`rounded-xl border ${bg} p-4 flex gap-3`}>
+                                        <div className="w-8 h-8 rounded-lg bg-dark-card flex items-center justify-center shrink-0">
+                                            <Icon size={16} className={color} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-white">{title}</p>
+                                            <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{desc}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-white">{title}</p>
-                                        <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Card>
+                                ))}
+                            </div>
+                        )}
+                    </Card>
+                </PlanGate>
             </div>
 
-            {/* Bar chart — problems by topic */}
-            <Card className="border-dark-border">
-                <CardHeader>
-                    <CardTitle>{t('analytics.problemsByTopic')}</CardTitle>
-                    <Badge variant="ghost">Total Attempts</Badge>
-                </CardHeader>
-                {!hasTopics ? (
-                    <div className="h-[180px] flex items-center justify-center">
-                        <p className="text-sm text-slate-500">No topic data yet.</p>
-                    </div>
-                ) : (
-                    <ResponsiveContainer width="100%" height={180}>
-                        <BarChart data={topicBreakdown} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                            <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Bar dataKey="problems" radius={[4, 4, 0, 0]}>
-                                {topicBreakdown.map((entry) => (
-                                    <Cell
-                                        key={entry.name}
-                                        fill={entry.accuracy >= 75 ? '#10b981' : entry.accuracy >= 60 ? '#f59e0b' : '#ef4444'}
-                                        opacity={0.8}
-                                    />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
-                )}
-            </Card>
+            {/* Bar chart — problems by topic — Pro+ */}
+            <PlanGate minPlan="pro" compact>
+                <Card className="border-dark-border">
+                    <CardHeader>
+                        <CardTitle>{t('analytics.problemsByTopic')}</CardTitle>
+                        <Badge variant="ghost">Total Attempts</Badge>
+                    </CardHeader>
+                    {!hasTopics ? (
+                        <div className="h-[180px] flex items-center justify-center">
+                            <p className="text-sm text-slate-500">No topic data yet.</p>
+                        </div>
+                    ) : (
+                        <ResponsiveContainer width="100%" height={180}>
+                            <BarChart data={topicBreakdown} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Bar dataKey="problems" radius={[4, 4, 0, 0]}>
+                                    {topicBreakdown.map((entry) => (
+                                        <Cell
+                                            key={entry.name}
+                                            fill={entry.accuracy >= 75 ? '#10b981' : entry.accuracy >= 60 ? '#f59e0b' : '#ef4444'}
+                                            opacity={0.8}
+                                        />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    )}
+                </Card>
+            </PlanGate>
         </div>
     );
 }

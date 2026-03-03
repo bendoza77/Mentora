@@ -137,6 +137,14 @@ const userSchema = new mongoose.Schema(
             default: [],
         },
 
+        // ── Daily AI usage tracker ────────────────────────────────────────────
+        // Resets automatically each calendar day. Used to enforce the
+        // 5-question/day limit for Free-plan users.
+        aiUsage: {
+            count:     { type: Number, default: 0 },
+            resetDate: { type: Date,   default: null },
+        },
+
         // ── Password reset ────────────────────────────────────────────────────
         passwordResetToken:   { type: String, select: false },
         passwordResetExpires: { type: Date,   select: false },

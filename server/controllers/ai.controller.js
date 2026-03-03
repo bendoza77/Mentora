@@ -1,5 +1,8 @@
 const AppError = require('../utils/AppError');
 const { streamToResponse } = require('../services/ai.service');
+const User = require('../models/user.model');
+
+const FREE_AI_DAILY_LIMIT = 5;
 
 /* ── POST /api/ai/chat ────────────────────────────────────────────────────────
  * Accepts a conversation history and streams the AI response back via SSE.
@@ -29,6 +32,30 @@ const chat = async (req, res, next) => {
     const last = messages[messages.length - 1];
     if (!last || last.role !== 'user' || !String(last.content || '').trim()) {
         return next(new AppError('Last message must be a non-empty user message', 400));
+    }
+
+    // ── Free-plan daily limit ─────────────────────────────────────────────────
+    if (req.user?.plan === 'free') {
+        const today     = new Date(); today.setHours(0, 0, 0, 0);
+        const aiUsage   = req.user.aiUsage || {};
+        const isNewDay  = !aiUsage.resetDate || new Date(aiUsage.resetDate) < today;
+        const usedToday = isNewDay ? 0 : (aiUsage.count || 0);
+
+        if (usedToday >= FREE_AI_DAILY_LIMIT) {
+            return res.status(429).json({
+                status:  'fail',
+                code:    'DAILY_AI_LIMIT',
+                used:    usedToday,
+                limit:   FREE_AI_DAILY_LIMIT,
+                message: `You've used all ${FREE_AI_DAILY_LIMIT} free AI questions for today. Upgrade to Pro for unlimited access.`,
+            });
+        }
+
+        // Increment counter atomically
+        await User.findByIdAndUpdate(req.user._id, {
+            'aiUsage.count':     isNewDay ? 1 : usedToday + 1,
+            'aiUsage.resetDate': isNewDay ? today : aiUsage.resetDate,
+        });
     }
 
     // ── SSE headers ───────────────────────────────────────────────────────────

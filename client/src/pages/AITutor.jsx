@@ -5,9 +5,11 @@ import usePageTitle from '../hooks/usePageTitle';
 import {
   Send, Sparkles, Lightbulb, Trash2,
   BrainCircuit, Copy, Check, RefreshCw,
+  Zap, Lock,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
 const SERVER_API = import.meta.env.VITE_SERVER_URL + '/api';
@@ -213,6 +215,25 @@ export default function AITutor() {
   const bottomRef = useRef(null);
   const abortRef  = useRef(null); // AbortController for cancelling stream
 
+  // ── Plan / daily usage ──────────────────────────────────────────────────────
+  const isFree              = user?.plan === 'free' || !user?.plan;
+  const [dailyUsed, setDailyUsed]   = useState(0);
+  const [dailyLimit, setDailyLimit] = useState(null); // null = unlimited
+  const isLimited = dailyLimit !== null && dailyUsed >= dailyLimit;
+
+  useEffect(() => {
+    if (!isFree) return; // Pro/Premium have no limit
+    fetch(`${SERVER_API}/users/stats/me`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status === 'success') {
+          setDailyUsed(d.data.dailyAIUsed  ?? 0);
+          setDailyLimit(d.data.dailyAILimit ?? 5);
+        }
+      })
+      .catch(() => {});
+  }, [isFree]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [history, streamingText, isStreaming]);
@@ -220,7 +241,7 @@ export default function AITutor() {
   // ── Send message ────────────────────────────────────────────────────────────
   const send = useCallback(async (text) => {
     const userText = (text || input).trim();
-    if (!userText || isStreaming) return;
+    if (!userText || isStreaming || isLimited) return;
 
     setInput('');
 
@@ -243,8 +264,17 @@ export default function AITutor() {
       });
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Server error ${res.status}`);
+        const errData = await res.json().catch(() => ({}));
+        // Daily limit hit — update counter so UI shows locked state
+        if (res.status === 429 && errData.code === 'DAILY_AI_LIMIT') {
+          setDailyUsed(errData.limit ?? dailyLimit ?? 5);
+        }
+        throw new Error(errData.message || `Server error ${res.status}`);
+      }
+
+      // Successful request — increment local counter for free users
+      if (isFree && dailyLimit !== null) {
+        setDailyUsed(prev => Math.min(prev + 1, dailyLimit));
       }
 
       // Read the SSE stream
@@ -327,6 +357,20 @@ export default function AITutor() {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="primary">Llama 3.3 · 70B</Badge>
+
+          {/* Daily usage counter (free plan only) */}
+          {isFree && dailyLimit !== null && (
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
+              isLimited
+                ? 'bg-red-500/15 border-red-500/30 text-red-400'
+                : dailyUsed >= dailyLimit - 1
+                ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                : 'bg-dark-card border-dark-border text-slate-400'
+            }`}>
+              {dailyUsed}/{dailyLimit} today
+            </span>
+          )}
+
           {history.length > 0 && (
             <button
               onClick={clear}
@@ -378,16 +422,40 @@ export default function AITutor() {
 
       {/* ── Input area ──────────────────────────────────────────────────────── */}
       <div className="px-6 py-4 border-t border-dark-border bg-dark-surface shrink-0">
+
+        {/* Upgrade banner when daily limit is reached */}
+        {isLimited && (
+          <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-primary-600/10 border border-primary-500/30">
+            <div className="flex items-center gap-2.5">
+              <Lock size={15} className="text-primary-400 shrink-0" />
+              <p className="text-sm text-slate-300">
+                You've used all <span className="text-white font-semibold">{dailyLimit} free AI questions</span> for today.
+              </p>
+            </div>
+            <Link
+              to="/pricing"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary-600 to-accent-500 text-white text-xs font-bold hover:opacity-90 transition-opacity"
+            >
+              <Zap size={11} /> Upgrade to Pro
+            </Link>
+          </div>
+        )}
+
         <div className="flex gap-3 items-end">
           <div className="flex-1 relative">
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
-              placeholder={t('tutor.inputPlaceholder')}
+              placeholder={isLimited ? 'Daily limit reached — upgrade to Pro for unlimited access' : t('tutor.inputPlaceholder')}
               rows={1}
+              disabled={isLimited}
               style={{ resize: 'none' }}
-              className="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-primary-500/50 transition-all"
+              className={`w-full bg-dark-card border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-all ${
+                isLimited
+                  ? 'border-dark-border opacity-50 cursor-not-allowed'
+                  : 'border-dark-border focus:border-primary-500/50'
+              }`}
             />
           </div>
 
@@ -395,7 +463,7 @@ export default function AITutor() {
             {/* Hint button */}
             <button
               onClick={() => send('Give me a hint for this problem')}
-              disabled={isStreaming || history.length === 0}
+              disabled={isStreaming || history.length === 0 || isLimited}
               title="Ask for a hint"
               className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
@@ -405,7 +473,7 @@ export default function AITutor() {
             {/* New problem button */}
             <button
               onClick={() => send('Give me a random 10th-grade math problem to practice')}
-              disabled={isStreaming}
+              disabled={isStreaming || isLimited}
               title="Give me a random problem"
               className="p-3 rounded-xl bg-accent-500/10 border border-accent-500/20 text-accent-400 hover:bg-accent-500/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
@@ -425,7 +493,7 @@ export default function AITutor() {
                 variant="gradient"
                 size="md"
                 onClick={() => send()}
-                disabled={!input.trim()}
+                disabled={!input.trim() || isLimited}
                 icon={<Send size={16} />}
               >
                 {t('tutor.send')}

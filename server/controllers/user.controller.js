@@ -273,6 +273,21 @@ const getMyStats = catchAsync(async (req, res) => {
     // Weak topic count (accuracy < 60%)
     const weakTopicCount = topicBreakdown.filter(t => t.accuracy < 60).length;
 
+    // ── Plan usage data (for frontend gating UI) ──────────────────────────────
+    const plan      = user.plan || 'free';
+    const isFree    = plan === 'free';
+
+    // Daily AI usage (resets each calendar day)
+    const aiUsage   = user.aiUsage || {};
+    const today     = new Date(); today.setHours(0, 0, 0, 0);
+    const isNewDay  = !aiUsage.resetDate || new Date(aiUsage.resetDate) < today;
+    const dailyAIUsed = isNewDay ? 0 : (aiUsage.count || 0);
+
+    // Monthly exam count
+    const now          = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonthExams = examScores.filter(e => new Date(e.date) >= firstOfMonth).length;
+
     return res.json({
         status: 'success',
         data: {
@@ -289,6 +304,14 @@ const getMyStats = catchAsync(async (req, res) => {
             latestActivity,
             weakTopicCount,
             totalExams: examScores.length,
+            // Plan gating data
+            plan,
+            dailyAIUsed,
+            dailyAILimit:      isFree ? 5   : null,   // null = unlimited
+            practiceUsed:      problemsSolved,
+            practiceLimit:     isFree ? 200 : null,
+            thisMonthExams,
+            monthlyExamLimit:  isFree ? 1   : null,
         },
     });
 });
@@ -305,6 +328,17 @@ const addActivity = catchAsync(async (req, res, next) => {
     }
     if (!['easy', 'medium', 'hard'].includes(difficulty)) {
         return next(new AppError('difficulty must be easy | medium | hard', 400));
+    }
+
+    // Free plan: 200 total practice problems
+    if (req.user.plan === 'free') {
+        const problemsSolved = req.user.stats?.problemsSolved || 0;
+        if (problemsSolved >= 200) {
+            return next(new AppError(
+                'Free plan allows 200 practice problems total. Upgrade to Pro for unlimited access.',
+                403
+            ));
+        }
     }
 
     const userId = req.user._id;
@@ -336,10 +370,23 @@ const addActivity = catchAsync(async (req, res, next) => {
 const addExamScore = catchAsync(async (req, res, next) => {
     const { score, maxScore = 100, subject = 'Math' } = req.body;
 
-    console.log(score);
-
     if (typeof score !== 'number' || score < 0) {
         return next(new AppError('score (number >= 0) is required', 400));
+    }
+
+    // Free plan: 1 mock exam per calendar month
+    if (req.user.plan === 'free') {
+        const now          = new Date();
+        const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const thisMonthExams = (req.user.stats?.examScores || []).filter(
+            e => new Date(e.date) >= firstOfMonth
+        );
+        if (thisMonthExams.length >= 1) {
+            return next(new AppError(
+                'Free plan allows 1 mock exam per month. Upgrade to Pro for unlimited exams.',
+                403
+            ));
+        }
     }
 
     const userId = req.user._id;
