@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
+import { ExamProvider } from './context/ExamContext';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
 import Landing from './pages/Landing';
@@ -14,6 +15,8 @@ import Practice from './pages/Practice';
 import Settings from './pages/Settings';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import About from './pages/static/About';
 import Blog from './pages/static/Blog';
 import Careers from './pages/static/Careers';
@@ -25,6 +28,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import PricingPage from './pages/PricingPage';
 import Purchase from './pages/Purchase';
 import './i18n';
+
 
 const APP_ROUTES = ['/dashboard', '/tutor', '/exam', '/analytics', '/practice', '/settings'];
 const GUEST_ROUTES = ['/', '/login', '/register'];
@@ -65,11 +69,13 @@ function AppShell() {
   }
 
   // Auth pages — full-screen, no navbar
-  if (location.pathname === '/login' || location.pathname === '/register') {
+  if (['/login', '/register', '/forgot-password', '/reset-password'].includes(location.pathname)) {
     return (
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login"           element={<Login />} />
+        <Route path="/register"        element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password"  element={<ResetPassword />} />
       </Routes>
     );
   }
@@ -119,7 +125,9 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppShell />
+          <ExamProvider>
+            <AppShell />
+          </ExamProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
@@ -135,6 +136,10 @@ const userSchema = new mongoose.Schema(
             }],
             default: [],
         },
+
+        // ── Password reset ────────────────────────────────────────────────────
+        passwordResetToken:   { type: String, select: false },
+        passwordResetExpires: { type: Date,   select: false },
     },
     { timestamps: true }
 );
@@ -154,6 +159,15 @@ userSchema.methods.signToken = function () {
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES }
     );
+};
+
+// Generates a raw token (sent in email) and stores its SHA-256 hash in the DB.
+// The raw token is never stored — only the hash — so a DB leak can't be used to reset passwords.
+userSchema.methods.createPasswordResetToken = function () {
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken   = crypto.createHash('sha256').update(rawToken).digest('hex');
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    return rawToken;
 };
 
 const User = mongoose.model("User", userSchema);

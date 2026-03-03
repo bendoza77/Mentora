@@ -303,12 +303,12 @@ export default function Login() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Password</label>
-                      <button
-                        type="button"
+                      <Link
+                        to="/forgot-password"
                         className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
                       >
                         Forgot password?
-                      </button>
+                      </Link>
                     </div>
                     <Field
                       type="password"

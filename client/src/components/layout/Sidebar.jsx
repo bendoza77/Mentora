@@ -121,9 +121,17 @@ export default function Sidebar() {
           'flex items-center gap-3 mt-3 px-3 py-2.5 rounded-xl bg-dark-card border border-dark-border',
           collapsed && 'justify-center'
         )}>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-            {user?.name?.[0] || 'G'}
-          </div>
+          {user?.avatar?.url ? (
+            <img
+              src={user.avatar.url}
+              alt="avatar"
+              className="w-8 h-8 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              {user?.fullname?.[0]?.toUpperCase() || 'U'}
+            </div>
+          )}
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user?.fullname}</p>

@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(helmet());
 
 const corsOptions = {
-    origin: process.env.CLIENT_URL,
+    origin: ["http://localhost:5173", "https://mentora-self.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

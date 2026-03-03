@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
+
 const AuthContext = createContext(null);
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
