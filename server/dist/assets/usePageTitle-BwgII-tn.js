@@ -1,0 +1,1 @@
+import{r as t}from"./vendor-react-DesB9ED5.js";function o(e){t.useEffect(()=>(document.title=e?`${e} | Mentora AI`:"Mentora AI — გამოცდის მომზადება",()=>{document.title="Mentora AI — გამოცდის მომზადება"}),[e])}export{o as u};
