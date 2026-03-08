@@ -8,11 +8,20 @@
     <meta name="theme-color" content="#7c3aed" />
     <title>Mentora AI — გამოცდის მომზადება</title>
 
-    <!-- Google Fonts: Inter + Noto Sans Georgian -->
+    <!-- DNS prefetch speeds up the font domain lookup before preconnect kicks in -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Trimmed font weights to only what the UI actually uses — cuts ~35% off
+      the font payload vs the original (which loaded 7-weight variants each).
+      Inter:              400 500 600 700 800
+      Noto Sans Georgian: 400 500 600 700
+      JetBrains Mono:     400 500   (code blocks only)
+    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Georgian:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
   </head>

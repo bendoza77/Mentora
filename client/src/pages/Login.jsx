@@ -199,7 +199,7 @@ export default function Login() {
         {/* Centre copy */}
         <div className="relative z-10 space-y-8">
           <div>
-            <p className="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4">Welcome Back</p>
+            <p className="text-xs font-semibold text-primary-400 uppercase mt-5 tracking-widest mb-4">Welcome Back</p>
             <h2 className="text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-5">
               Continue where
               <br />
@@ -226,7 +226,7 @@ export default function Login() {
         </div>
 
         {/* Testimonial slider */}
-        <div className="relative z-10">
+        <div className="mt-10 relative z-10">
           <TestimonialSlider />
         </div>
       </div>
