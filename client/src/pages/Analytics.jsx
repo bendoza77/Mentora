@@ -163,7 +163,7 @@ export default function Analytics() {
     ];
 
     return (
-        <div className="flex-1 p-6 overflow-y-auto space-y-6">
+        <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 page-enter">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -189,11 +189,11 @@ export default function Analytics() {
             </div>
 
             {/* Overview stats row — REAL DATA */}
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {loading
                     ? [...Array(4)].map((_, i) => <StatSkeleton key={i} />)
-                    : overviewStats.map(({ label, val, trend, up, icon: Icon }) => (
-                        <Card key={label} className="border-dark-border">
+                    : overviewStats.map(({ label, val, trend, up, icon: Icon }, i) => (
+                        <Card key={label} className="card-enter border-dark-border" style={{ animationDelay: `${i * 55}ms` }}>
                             <div className="flex items-start justify-between mb-3">
                                 <Icon size={18} className="text-primary-400" />
                                 {trend !== '—' && (
@@ -212,9 +212,9 @@ export default function Analytics() {
             </div>
 
             {/* Main charts row */}
-            <div className="grid xl:grid-cols-3 gap-5">
+            <div className="grid lg:grid-cols-3 gap-5">
                 {/* Performance trend — 2 cols */}
-                <Card className="xl:col-span-2 border-dark-border">
+                <Card className="lg:col-span-2 border-dark-border slide-from-left fade-blur-in" style={{ animationDelay: '100ms' }}>
                     <CardHeader>
                         <CardTitle>{t('analytics.performance')}</CardTitle>
                         <Badge variant="accent" dot>Live</Badge>
@@ -283,7 +283,7 @@ export default function Analytics() {
             </div>
 
             {/* Topic breakdown — Pro+ */}
-            <div className="grid xl:grid-cols-2 gap-5">
+            <div className="grid md:grid-cols-2 gap-5">
                 {/* Topic Heatmap */}
                 <PlanGate minPlan="pro" compact>
                 <Card className="border-dark-border">

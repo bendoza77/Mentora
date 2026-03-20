@@ -685,9 +685,33 @@ export default function Settings() {
   const activeItem = NAV_ITEMS.find(i => i.id === active);
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      {/* Settings Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-dark-border bg-dark-surface/60 flex flex-col py-5 px-3 overflow-y-auto">
+    <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+
+      {/* ── Mobile horizontal tab bar (visible below md) ── */}
+      <div className="md:hidden flex overflow-x-auto no-scrollbar border-b border-dark-border bg-dark-surface/80 shrink-0 px-2 py-1 gap-1">
+        {NAV_ITEMS.map(({ id, icon: Icon, label, danger }) => (
+          <button
+            key={id}
+            onClick={() => setActive(id)}
+            className={clsx(
+              'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap',
+              active === id
+                ? danger
+                  ? 'bg-red-500/15 text-red-400'
+                  : 'bg-primary-600/15 text-primary-300'
+                : danger
+                  ? 'text-red-400/60 hover:text-red-400'
+                  : 'text-slate-500 hover:text-white'
+            )}
+          >
+            <Icon size={14} className="shrink-0" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Desktop left sidebar (hidden below md) ── */}
+      <aside className="hidden md:flex w-56 shrink-0 border-r border-dark-border bg-dark-surface/60 flex-col py-5 px-3 overflow-y-auto">
         <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest px-3 mb-3">
           {t('nav.settings')}
         </p>
@@ -731,14 +755,17 @@ export default function Settings() {
       </aside>
 
       {/* Content area */}
-      <main className="flex-1 overflow-y-auto p-6 space-y-1">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-600 mb-6">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-1">
+        {/* Breadcrumb — desktop only */}
+        <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 mb-6 slide-down">
           <span>Settings</span>
           <ChevronRight size={12} />
           <span className="text-slate-300">{activeItem?.label}</span>
         </div>
-        {renderSection()}
+        {/* key forces re-mount animation when switching sections */}
+        <div key={active} className="page-enter">
+          {renderSection()}
+        </div>
       </main>
     </div>
   );

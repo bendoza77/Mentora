@@ -109,7 +109,7 @@ function AILine({ line, idx }) {
 
 function UserMessage({ text }) {
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end slide-from-right">
       <div className="bg-primary-600/85 text-white text-sm px-4 py-3 rounded-2xl rounded-tr-sm max-w-[78%] leading-relaxed shadow-sm">
         {text}
       </div>
@@ -127,7 +127,7 @@ function AIMessage({ text, isStreaming }) {
   };
 
   return (
-    <div className="flex gap-3 items-start group">
+    <div className="flex gap-3 items-start group slide-from-left">
       {/* Avatar */}
       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0 mt-0.5 shadow-md">
         <Sparkles size={13} className="text-white" />
@@ -339,35 +339,35 @@ export default function AITutor() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full page-enter">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-dark-border bg-dark-surface shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shadow-md">
-            <BrainCircuit size={20} className="text-white" />
+      <div className="slide-down flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-dark-border bg-dark-surface shrink-0 gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shadow-md">
+            <BrainCircuit size={18} className="text-white" />
           </div>
-          <div>
-            <h1 className="text-base font-bold text-white">{t('tutor.title')}</h1>
+          <div className="min-w-0">
+            <h1 className="text-sm sm:text-base font-bold text-white truncate">{t('tutor.title')}</h1>
             <p className="text-xs text-emerald-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {t('tutor.subtitle')}
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="truncate">{t('tutor.subtitle')}</span>
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="primary">Llama 3.3 · 70B</Badge>
+        <div className="flex items-center gap-2 shrink-0">
+          <Badge variant="primary" className="hidden sm:flex">Llama 3.3 · 70B</Badge>
 
           {/* Daily usage counter (free plan only) */}
           {isFree && dailyLimit !== null && (
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
+            <span className={`text-xs font-bold px-2 py-1 rounded-full border ${
               isLimited
                 ? 'bg-red-500/15 border-red-500/30 text-red-400'
                 : dailyUsed >= dailyLimit - 1
                 ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
                 : 'bg-dark-card border-dark-border text-slate-400'
             }`}>
-              {dailyUsed}/{dailyLimit} today
+              {dailyUsed}/{dailyLimit}
             </span>
           )}
 
@@ -377,14 +377,14 @@ export default function AITutor() {
               title="Clear conversation"
               className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
             >
-              <Trash2 size={16} />
+              <Trash2 size={15} />
             </button>
           )}
         </div>
       </div>
 
       {/* ── Quick prompts ───────────────────────────────────────────────────── */}
-      <div className="px-6 py-3 border-b border-dark-border bg-dark-surface/50 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
+      <div className="slide-down px-3 sm:px-6 py-2 sm:py-3 border-b border-dark-border bg-dark-surface/50 flex gap-2 overflow-x-auto no-scrollbar shrink-0" style={{ animationDelay: '60ms' }}>
         {QUICK_PROMPTS.map(q => (
           <button
             key={q}
@@ -398,7 +398,7 @@ export default function AITutor() {
       </div>
 
       {/* ── Messages ────────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 space-y-5">
         {/* Welcome */}
         <WelcomeMessage user={user} />
 
@@ -421,7 +421,7 @@ export default function AITutor() {
       </div>
 
       {/* ── Input area ──────────────────────────────────────────────────────── */}
-      <div className="px-6 py-4 border-t border-dark-border bg-dark-surface shrink-0">
+      <div className="slide-up px-3 sm:px-6 py-3 sm:py-4 border-t border-dark-border bg-dark-surface shrink-0" style={{ animationDelay: '80ms' }}>
 
         {/* Upgrade banner when daily limit is reached */}
         {isLimited && (
@@ -496,7 +496,7 @@ export default function AITutor() {
                 disabled={!input.trim() || isLimited}
                 icon={<Send size={16} />}
               >
-                {t('tutor.send')}
+                <span className="hidden sm:inline">{t('tutor.send')}</span>
               </Button>
             )}
           </div>

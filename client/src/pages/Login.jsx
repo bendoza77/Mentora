@@ -177,7 +177,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex overflow-hidden">
+    <div className="min-h-screen bg-dark-bg flex overflow-hidden page-enter">
 
       {/* ══ LEFT BRAND PANEL ══ */}
       <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between p-12 overflow-hidden">

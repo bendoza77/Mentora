@@ -6,6 +6,8 @@ import { useAuth } from './context/AuthContext';
 import { ExamProvider } from './context/ExamContext';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
+import CursorFollower from './components/ui/CursorFollower';
+import { BrainCircuit } from 'lucide-react';
 import './i18n';
 
 // Lazy-loaded pages — each becomes its own JS chunk, only fetched when needed
@@ -31,8 +33,10 @@ const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const PricingPage    = lazy(() => import('./pages/PricingPage'));
 const Purchase       = lazy(() => import('./pages/Purchase'));
 
-const APP_ROUTES   = ['/dashboard', '/tutor', '/exam', '/analytics', '/practice', '/settings'];
-const GUEST_ROUTES = ['/', '/login', '/register'];
+const APP_ROUTES        = ['/dashboard', '/tutor', '/exam', '/analytics', '/practice', '/settings'];
+const GUEST_ROUTES      = ['/', '/login', '/register'];
+// Routes where we must wait for auth before rendering (to avoid flash-of-wrong-page)
+const AUTH_GATED_ROUTES = ['/login', '/register'];
 
 function LoadingSpinner() {
   return (
@@ -62,12 +66,16 @@ function AppShell() {
   const isAppPage   = APP_ROUTES.some(r => location.pathname.startsWith(r));
   const isGuestRoute = GUEST_ROUTES.includes(location.pathname);
 
-  // Auth still resolving — hold on routes that will redirect
-  if (isAuthenticated === null && (isAppPage || isGuestRoute)) {
+  const isAuthGated = AUTH_GATED_ROUTES.includes(location.pathname);
+
+  // Auth still resolving — only block routes where wrong render = bad UX
+  // (app pages need auth check; /login+/register would flash then redirect)
+  // Landing page (/) renders immediately — no spinner for public visitors
+  if (isAuthenticated === null && (isAppPage || isAuthGated)) {
     return <LoadingSpinner />;
   }
 
-  // Authenticated user on guest-only route → dashboard
+  // Authenticated user on login/register → dashboard (/ can show landing briefly)
   if (isAuthenticated === true && isGuestRoute) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -119,7 +127,17 @@ function AppShell() {
   return (
     <div className="flex h-screen overflow-hidden bg-dark-bg">
       <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* pb-14 md:pb-0 reserves space for the mobile bottom nav (56px) */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden pb-14 md:pb-0">
+        {/* Main logo — shown when sidebar is open, hidden when collapsed */}
+        <div className="main-logo md:flex items-center gap-2.5 px-5 py-3 border-b border-dark-border bg-dark-surface shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shadow-sm shadow-primary-600/30">
+            <BrainCircuit size={15} className="text-white" />
+          </div>
+          <span className="font-bold text-white text-sm leading-none">
+            Mentora <span className="gradient-text">AI</span>
+          </span>
+        </div>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -140,6 +158,7 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
+          <CursorFollower />
           <AppShell />
         </AuthProvider>
       </ThemeProvider>

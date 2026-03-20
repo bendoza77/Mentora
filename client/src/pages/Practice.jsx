@@ -48,7 +48,7 @@ export default function Practice() {
   }, []);
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto space-y-6">
+    <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 page-enter">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -123,12 +123,12 @@ export default function Practice() {
       {/* Topics grid */}
       <div>
         <h2 className="text-base font-semibold text-white mb-4">Practice by Topic</h2>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {TOPIC_NAMES.map(name => {
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {TOPIC_NAMES.map((name, i) => {
             const solved = topicMap[name] ?? 0;
             return (
               <Link to="/exam" key={name}>
-                <Card className="border-dark-border card-hover cursor-pointer h-full">
+                <Card className="card-enter border-dark-border card-hover cursor-pointer h-full" style={{ animationDelay: `${i * 50}ms` }}>
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-sm font-semibold text-white">{name}</h3>
                     <ChevronRight size={14} className="text-slate-600 shrink-0" />

@@ -126,24 +126,26 @@ export default function Dashboard() {
   const insight        = generateInsight(stats, todaySolved);
 
   return (
-    <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+    <div className="flex-1 p-4 sm:p-6 space-y-5 sm:space-y-6 overflow-y-auto page-enter">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="slide-down flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">
             {t('dashboard.welcome')}, {user?.fullname?.split(' ')[0]} 👋
           </h1>
           <p className="text-sm text-slate-400 mt-1">{t('dashboard.subtitle')}</p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/tutor">
-            <Button variant="gradient" size="md" icon={<Sparkles size={15} />}>
-              {t('dashboard.continueSession')}
+        <div className="flex gap-2 sm:gap-3">
+          <Link to="/tutor" className="flex-1 sm:flex-none">
+            <Button variant="gradient" size="sm" icon={<Sparkles size={14} />} full>
+              <span className="sm:hidden">AI Tutor</span>
+              <span className="hidden sm:inline">{t('dashboard.continueSession')}</span>
             </Button>
           </Link>
-          <Link to="/exam">
-            <Button variant="secondary" size="md" icon={<ClipboardCheck size={15} />}>
-              {t('dashboard.startExam')}
+          <Link to="/exam" className="flex-1 sm:flex-none">
+            <Button variant="secondary" size="sm" icon={<ClipboardCheck size={14} />} full>
+              <span className="sm:hidden">Exam</span>
+              <span className="hidden sm:inline">{t('dashboard.startExam')}</span>
             </Button>
           </Link>
         </div>
@@ -160,9 +162,9 @@ export default function Dashboard() {
       />
 
       {/* Main grid */}
-      <div className="grid xl:grid-cols-3 gap-5">
+      <div className="grid lg:grid-cols-3 gap-5">
         {/* Progress chart — 2 cols */}
-        <div className="xl:col-span-2 space-y-5">
+        <div className="lg:col-span-2 space-y-5 slide-from-left" style={{ animationDelay: '120ms' }}>
           <ProgressChart weeklyActivity={stats?.weeklyActivity} loading={loading} />
 
           {/* Topics to review — real data */}
@@ -236,7 +238,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right column */}
-        <div className="space-y-5">
+        <div className="space-y-5 slide-from-right" style={{ animationDelay: '160ms' }}>
           {/* AI Insight — real personalised analysis */}
           <Card className="border-primary-500/25 bg-gradient-to-br from-primary-600/10 to-dark-card">
             <div className="flex items-start gap-3 mb-3">
@@ -367,11 +369,12 @@ export default function Dashboard() {
         </div>
 
         {/* Feature grid */}
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {WHY_MENTORA.map(({ icon: Icon, title, desc, gradient, iconBg, iconColor }) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {WHY_MENTORA.map(({ icon: Icon, title, desc, gradient, iconBg, iconColor }, i) => (
             <div
               key={title}
-              className={`relative overflow-hidden rounded-2xl border border-dark-border p-5 bg-gradient-to-br ${gradient} group hover:border-primary-500/40 transition-all duration-300`}
+              className={`card-enter relative overflow-hidden rounded-2xl border border-dark-border p-5 bg-gradient-to-br ${gradient} group hover:border-primary-500/40 transition-all duration-300`}
+              style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center mb-4`}>
                 <Icon size={20} className={iconColor} />

@@ -23,16 +23,15 @@ export default function Landing() {
   return (
     <main>
       <Hero />
-      <Suspense fallback={<SectionSkeleton />}>
-        <Problem />
-        <HowItWorks />
-        <StudentsScrollBanner />
-        <WhyMentora />
-        <AIDemo />
-        <Pricing />
-        <CTA />
-        <Footer />
-      </Suspense>
+      {/* Each section gets its own Suspense — all chunks fetch in parallel */}
+      <Suspense fallback={<SectionSkeleton />}><Problem /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><HowItWorks /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><StudentsScrollBanner /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><WhyMentora /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><AIDemo /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><Pricing /></Suspense>
+      <Suspense fallback={<SectionSkeleton />}><CTA /></Suspense>
+      <Suspense fallback={null}><Footer /></Suspense>
     </main>
   );
 }

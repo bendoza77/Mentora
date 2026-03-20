@@ -274,6 +274,131 @@ body.light {
   color: #a78bfa;
 }
 
+/* ─── Hide scrollbar (keep scroll) ─── */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ════════════════════════════════════════════════════════
+   PAGE & COMPONENT ANIMATION SYSTEM
+   ════════════════════════════════════════════════════════ */
+
+/* Page mount — every app page fades + rises on enter */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Card stagger — repeated grid items */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.card-enter {
+  animation: cardEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slide from left — left column / chart panels */
+@keyframes slideFromLeft {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.slide-from-left {
+  animation: slideFromLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slide from right — right column / insight panels */
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.slide-from-right {
+  animation: slideFromRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Header slide down */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-down {
+  animation: slideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slide up from bottom */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Blur fade — charts, images, rich content */
+@keyframes fadeBlurIn {
+  from { opacity: 0; filter: blur(6px) scale(0.99); }
+  to   { opacity: 1; filter: blur(0)   scale(1);    }
+}
+.fade-blur-in {
+  animation: fadeBlurIn 0.5s ease both;
+}
+
+/* Pop scale — badges, small highlights */
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.8); }
+  70%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.pop-in {
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Question/content swap — slide old out, new in */
+@keyframes questionIn {
+  from { opacity: 0; transform: translateX(16px) scale(0.99); }
+  to   { opacity: 1; transform: translateX(0)    scale(1);    }
+}
+.question-enter {
+  animation: questionIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Sidebar ↔ Main logo toggle ─────────────────────────────────────────────
+   data-sidebar="open"      → sidebar is expanded → show main logo, hide sidebar logo
+   data-sidebar="collapsed" → sidebar is narrow   → hide main logo, show sidebar logo
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Main logo: collapses vertically when sidebar is collapsed */
+.main-logo {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+}
+:root[data-sidebar="open"] .main-logo {
+  max-height: 56px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ─── Sidebar animations ─── */
+@keyframes sidebarItemIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.sidebar-item {
+  animation: sidebarItemIn 0.3s ease both;
+}
+@keyframes mobileNavIn {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mobile-nav-enter {
+  animation: mobileNavIn 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
 /* ─── Sidebar Transition ─── */
 .sidebar-transition {
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -469,4 +594,75 @@ body.light .tooltip::after {
 
 body.light *:focus-visible {
   outline-color: rgba(124, 58, 237, 0.55);
+}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR  (CursorFollower.jsx)
+   ═══════════════════════════════════════════ */
+
+.cf-dot,
+.cf-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* ── Dot: 4 px, pure white, always sharp ── */
+.cf-dot {
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  margin-top: -2px;
+  background: #ffffff;
+  transition:
+    opacity 0.25s ease,
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Ring: 38 px, thin white border, no fill ── */
+.cf-ring {
+  width: 38px;
+  height: 38px;
+  margin-left: -19px;
+  margin-top: -19px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition:
+    opacity 0.25s ease,
+    width  0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    margin 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.3s ease,
+    background   0.3s ease;
+}
+
+/* ── Hover: dot disappears, ring fills softly ── */
+.cf-dot.cf-active {
+  opacity: 0;
+}
+
+.cf-ring.cf-active {
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Light mode ── */
+body.light .cf-dot  { background: #1e1b4b; }
+body.light .cf-ring { border-color: rgba(30, 27, 75, 0.2); }
+body.light .cf-ring.cf-active {
+  border-color: rgba(30, 27, 75, 0.4);
+  background: rgba(30, 27, 75, 0.04);
+}
+
+@media (hover: none) {
+  .cf-dot, .cf-ring { display: none; }
 }
