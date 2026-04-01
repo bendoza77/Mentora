@@ -130,7 +130,7 @@ function AppShell() {
       {/* pb-14 md:pb-0 reserves space for the mobile bottom nav (56px) */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden pb-14 md:pb-0">
         {/* Main logo — shown when sidebar is open, hidden when collapsed */}
-        <div className="main-logo md:flex items-center gap-2.5 px-5 py-3 border-b border-dark-border bg-dark-surface shrink-0">
+        <div className="main-logo hidden md:flex items-center gap-2.5 px-5 py-3 border-b border-dark-border bg-dark-surface shrink-0">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shadow-sm shadow-primary-600/30">
             <BrainCircuit size={15} className="text-white" />
           </div>

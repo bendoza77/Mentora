@@ -685,7 +685,7 @@ export default function Settings() {
   const activeItem = NAV_ITEMS.find(i => i.id === active);
 
   return (
-    <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+    <div className="flex flex-col md:flex-row flex-1 h-full overflow-hidden">
 
       {/* ── Mobile horizontal tab bar (visible below md) ── */}
       <div className="md:hidden flex overflow-x-auto no-scrollbar border-b border-dark-border bg-dark-surface/80 shrink-0 px-2 py-1 gap-1">
@@ -741,11 +741,15 @@ export default function Settings() {
         {/* User mini card at bottom */}
         <div className="mt-auto pt-4 border-t border-dark-border mx-1">
           <div className="flex items-center gap-2.5 px-2 py-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              {user?.name?.[0] || 'G'}
-            </div>
+            {user?.avatar?.url ? (
+              <img src={user.avatar.url} alt="avatar" className="w-8 h-8 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {user?.fullname?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-white truncate">{user?.name}</p>
+              <p className="text-xs font-semibold text-white truncate">{user?.fullname}</p>
               <Badge variant={PLANS[user?.plan]?.color || 'ghost'} className="text-[10px] py-0 mt-0.5">
                 {PLANS[user?.plan]?.label || 'Free'}
               </Badge>

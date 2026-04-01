@@ -245,11 +245,22 @@ body.light {
 
 /* ─── Card Hover ─── */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease, border-color 0.2s ease;
 }
 .card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.18), 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ─── Button press micro-interaction ─── */
+button:active, a:active {
+  outline: none;
+}
+
+/* ─── Focus rings ─── */
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid rgba(124,58,237,0.5);
+  outline-offset: 2px;
 }
 
 /* ─── Progress Bar ─── */
@@ -365,11 +376,12 @@ body.light {
 }
 
 /* ─── Sidebar ↔ Main logo toggle ─────────────────────────────────────────────
-   data-sidebar="open"      → sidebar is expanded → show main logo, hide sidebar logo
-   data-sidebar="collapsed" → sidebar is narrow   → hide main logo, show sidebar logo
+   Mobile (<md)              → always hidden (sidebar doesn't exist)
+   Desktop, sidebar open     → visible (slides down)
+   Desktop, sidebar collapsed → hidden (slides up, sidebar shows its own icon)
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* Main logo: collapses vertically when sidebar is collapsed */
+/* Mobile: always hidden */
 .main-logo {
   max-height: 0;
   opacity: 0;
@@ -377,10 +389,20 @@ body.light {
   pointer-events: none;
   transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
 }
-:root[data-sidebar="open"] .main-logo {
-  max-height: 56px;
-  opacity: 1;
-  pointer-events: auto;
+
+/* Desktop: visible by default (no dependency on JS data-sidebar="open") */
+@media (min-width: 768px) {
+  .main-logo {
+    max-height: 56px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Collapsed sidebar → hide main logo (sidebar shows its own icon) */
+  :root[data-sidebar="collapsed"] .main-logo {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* ─── Sidebar animations ─── */

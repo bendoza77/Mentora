@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import {
   BrainCircuit, LayoutDashboard, MessageSquare, ClipboardCheck,
-  BarChart3, BookOpen, Settings, LogOut, ChevronRight,
-  Zap, Crown,
+  BarChart3, BookOpen, Settings, LogOut,
+  ChevronLeft, ChevronRight, Zap, Crown,
 } from 'lucide-react';
-import Badge from '../ui/Badge';
 import clsx from 'clsx';
 import ThemeToggle from '../ui/ThemeToggle';
 import LanguageToggle from '../ui/LanguageToggle';
@@ -24,268 +23,305 @@ const BOTTOM_ITEMS = (t) => [
   { to: '/settings', icon: Settings, label: t('nav.settings') },
 ];
 
+const PLAN_ICON  = { pro: Zap, premium: Crown };
+const PLAN_COLOR = { pro: 'text-primary-400', premium: 'text-amber-400' };
+const PLAN_LABEL = { free: 'Free', pro: 'Pro', premium: 'Premium' };
+
+/* Tooltip that appears to the right of an icon when sidebar is collapsed */
+function Tooltip({ label, children }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      {children}
+      {visible && (
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 z-50 pointer-events-none">
+          <div className="flex items-center gap-0">
+            {/* Arrow */}
+            <div className="w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-dark-card" />
+            <div className="px-3 py-1.5 bg-dark-card border border-dark-border rounded-xl shadow-xl
+                            text-xs font-semibold text-white whitespace-nowrap">
+              {label}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sidebar() {
-  const { t } = useTranslation();
+  const { t }            = useTranslation();
   const { user, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location         = useLocation();
+  const navigate         = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => { logout(); navigate('/login'); };
-  const isActive = (to) => location.pathname === to;
-  const planColors = { free: 'ghost', pro: 'primary', premium: 'warning' };
-  const allMobileItems = [...NAV_ITEMS(t), ...BOTTOM_ITEMS(t)];
+  const isActive     = (to) => location.pathname === to;
+  const allMobile    = [...NAV_ITEMS(t), ...BOTTOM_ITEMS(t)];
 
-  // Broadcast collapsed state to the document root so other elements can react via CSS
+  // Notify CSS about sidebar state (used by .main-logo)
   useEffect(() => {
     document.documentElement.dataset.sidebar = collapsed ? 'collapsed' : 'open';
     return () => { delete document.documentElement.dataset.sidebar; };
   }, [collapsed]);
 
+  const PlanIcon = PLAN_ICON[user?.plan];
+
   return (
     <>
-      {/* ═══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           DESKTOP SIDEBAR
-          ═══════════════════════════════════════════ */}
+          ══════════════════════════════════════════════════════ */}
       <aside
-        style={{ transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}
         className={clsx(
-          'hidden md:flex flex-col h-screen bg-dark-surface border-r border-dark-border sticky top-0 z-30 overflow-hidden',
-          collapsed ? 'w-[72px]' : 'w-64'
+          'hidden md:flex flex-col h-screen sticky top-0 z-30 shrink-0 overflow-hidden',
+          'bg-dark-surface border-r border-dark-border',
+          collapsed ? 'w-[64px]' : 'w-[240px]'
         )}
+        style={{ transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1)' }}
       >
-        {/* ── Logo — visible only when collapsed ── */}
-        <div
-          className="flex items-center justify-center border-b border-dark-border overflow-hidden"
-          style={{
-            maxHeight:  collapsed ? '72px'  : '0px',
-            opacity:    collapsed ? 1       : 0,
-            padding:    collapsed ? '1rem'  : '0',
-            borderBottomWidth: collapsed ? '1px' : '0px',
-            transition: 'max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, padding 0.3s ease, border-bottom-width 0.3s ease',
-          }}
+
+        {/* ── Brand header ─────────────────────────────────── */}
+        <div className={clsx(
+          'flex items-center h-[56px] shrink-0 border-b border-dark-border overflow-hidden',
+          collapsed ? 'px-0 justify-center' : 'px-4 gap-3'
+        )}
+          style={{ transition: 'padding 0.28s cubic-bezier(0.4,0,0.2,1)' }}
         >
+          {/* Logo icon — always visible */}
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500
+                          flex items-center justify-center shrink-0
+                          shadow-md shadow-primary-600/30 animate-pulse-glow">
+            <BrainCircuit size={16} className="text-white" />
+          </div>
+
+          {/* Brand name — fades out when collapsed */}
           <div
-            className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500
-                       flex items-center justify-center shadow-md shadow-primary-600/30
-                       animate-pulse-glow transition-transform duration-200 hover:scale-105"
+            className="overflow-hidden whitespace-nowrap"
+            style={{
+              opacity:    collapsed ? 0 : 1,
+              maxWidth:   collapsed ? '0px' : '160px',
+              transition: 'opacity 0.18s ease, max-width 0.28s cubic-bezier(0.4,0,0.2,1)',
+            }}
           >
-            <BrainCircuit size={20} className="text-white" />
+            <span className="font-black text-[15px] text-white tracking-tight">
+              Mentora <span className="gradient-text">AI</span>
+            </span>
           </div>
         </div>
 
-        {/* ── Main nav ── */}
-        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden">
+        {/* ── Main nav ─────────────────────────────────────── */}
+        <nav className="flex-1 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden py-3 px-2">
           {NAV_ITEMS(t).map(({ to, icon: Icon, label, badge }, i) => {
             const active = isActive(to);
-            return (
+            const item = (
               <Link
                 key={to}
                 to={to}
-                className="sidebar-item group relative flex items-center gap-3 rounded-xl text-sm font-medium
-                           transition-colors duration-150 overflow-hidden"
-                style={{
-                  animationDelay: `${i * 40}ms`,
-                  padding: collapsed ? '0.625rem 0' : '0.625rem 0.75rem',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  background: active ? 'rgba(124,58,237,0.15)' : 'transparent',
-                  border: active ? '1px solid rgba(124,58,237,0.3)' : '1px solid transparent',
-                  boxShadow: active ? '0 0 12px rgba(124,58,237,0.08)' : 'none',
-                  transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s, padding 0.3s cubic-bezier(0.4,0,0.2,1)',
-                }}
-                onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-                onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+                className={clsx(
+                  'sidebar-item group relative flex items-center rounded-xl text-sm font-medium',
+                  'transition-all duration-150 overflow-hidden select-none',
+                  collapsed ? 'h-10 w-10 mx-auto justify-center' : 'h-10 px-3 gap-3',
+                  active
+                    ? 'bg-primary-600/15 border border-primary-500/25 text-primary-300'
+                    : 'border border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200'
+                )}
+                style={{ animationDelay: `${i * 35}ms` }}
               >
-                {/* Active left accent bar */}
-                <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 bg-primary-400 rounded-r-full"
-                  style={{
-                    height:     active ? '60%'  : '0%',
-                    opacity:    active ? 1      : 0,
-                    transition: 'height 0.25s ease, opacity 0.2s ease',
-                  }}
-                />
+                {/* Active accent bar — left edge */}
+                {active && !collapsed && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[55%]
+                                   bg-gradient-to-b from-primary-400 to-violet-500 rounded-r-full" />
+                )}
 
                 {/* Icon */}
                 <Icon
-                  size={18}
-                  className="shrink-0 transition-all duration-200 group-hover:scale-110"
-                  style={{ color: active ? '#a78bfa' : '#64748b' }}
+                  size={17}
+                  className={clsx(
+                    'shrink-0 transition-transform duration-150',
+                    active ? 'text-primary-400' : 'text-slate-500 group-hover:text-slate-300 group-hover:scale-110'
+                  )}
                 />
 
-                {/* Label */}
-                <span
-                  className="whitespace-nowrap overflow-hidden font-medium"
-                  style={{
-                    maxWidth:   collapsed ? '0px'   : '140px',
-                    opacity:    collapsed ? 0       : 1,
-                    color:      active    ? '#c4b5fd' : '#94a3b8',
-                    transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-                  }}
-                >
-                  {label}
-                </span>
+                {/* Label — hidden when collapsed */}
+                {!collapsed && (
+                  <span className="flex-1 truncate font-semibold leading-none">{label}</span>
+                )}
 
-                {/* Badge */}
-                {badge && (
-                  <span
-                    className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-primary-600/30 text-primary-300 whitespace-nowrap overflow-hidden shrink-0"
-                    style={{
-                      maxWidth:   collapsed ? '0px'   : '40px',
-                      opacity:    collapsed ? 0       : 1,
-                      padding:    collapsed ? '0'     : undefined,
-                      transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-                    }}
-                  >
+                {/* Badge — hidden when collapsed */}
+                {badge && !collapsed && (
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none
+                                   bg-gradient-to-r from-primary-600/50 to-violet-600/40 text-primary-300">
                     {badge}
                   </span>
                 )}
+
+                {/* Tiny active dot in collapsed mode */}
+                {active && collapsed && (
+                  <span className="absolute -right-0.5 top-1/2 -translate-y-1/2 w-1 h-4
+                                   bg-gradient-to-b from-primary-400 to-violet-500 rounded-l-full" />
+                )}
               </Link>
             );
+
+            return collapsed
+              ? <Tooltip key={to} label={label}>{item}</Tooltip>
+              : item;
           })}
         </nav>
 
-        {/* ── Bottom section ── */}
-        <div className="border-t border-dark-border px-3 py-4 flex flex-col gap-1 overflow-hidden">
+        {/* ── Bottom section ────────────────────────────────── */}
+        <div className="shrink-0 border-t border-dark-border py-3 px-2 flex flex-col gap-1">
 
-          {/* Settings link */}
-          {BOTTOM_ITEMS(t).map(({ to, icon: Icon, label }, i) => {
+          {/* Settings */}
+          {BOTTOM_ITEMS(t).map(({ to, icon: Icon, label }) => {
             const active = isActive(to);
-            return (
+            const item = (
               <Link
                 key={to}
                 to={to}
-                className="sidebar-item group flex items-center gap-3 rounded-xl text-sm font-medium
-                           transition-colors duration-150 overflow-hidden"
-                style={{
-                  animationDelay: `${(NAV_ITEMS(t).length + i) * 40}ms`,
-                  padding: collapsed ? '0.625rem 0' : '0.625rem 0.75rem',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  background: active ? 'rgba(124,58,237,0.12)' : 'transparent',
-                  transition: 'background 0.2s, padding 0.3s cubic-bezier(0.4,0,0.2,1)',
-                }}
-                onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-                onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'rgba(124,58,237,0.12)' : 'transparent'; }}
+                className={clsx(
+                  'group relative flex items-center rounded-xl text-sm font-medium',
+                  'transition-all duration-150 overflow-hidden select-none',
+                  collapsed ? 'h-10 w-10 mx-auto justify-center' : 'h-10 px-3 gap-3',
+                  active
+                    ? 'bg-primary-600/15 border border-primary-500/25 text-primary-300'
+                    : 'border border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-slate-200'
+                )}
               >
-                <Icon
-                  size={18}
-                  className="shrink-0 transition-transform duration-200 group-hover:scale-110"
-                  style={{ color: active ? '#a78bfa' : '#64748b' }}
-                />
-                <span
-                  className="whitespace-nowrap overflow-hidden"
-                  style={{
-                    maxWidth:   collapsed ? '0px'   : '140px',
-                    opacity:    collapsed ? 0       : 1,
-                    color:      active    ? '#c4b5fd' : '#94a3b8',
-                    transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-                  }}
-                >
-                  {label}
-                </span>
+                <Icon size={17} className={clsx(
+                  'shrink-0 transition-transform duration-150',
+                  active ? 'text-primary-400' : 'text-slate-500 group-hover:text-slate-300 group-hover:scale-110'
+                )} />
+                {!collapsed && (
+                  <span className="flex-1 truncate font-semibold leading-none">{label}</span>
+                )}
               </Link>
             );
+            return collapsed ? <Tooltip key={to} label={label}>{item}</Tooltip> : item;
           })}
 
-          {/* Theme + Language toggles */}
+          {/* Theme + Language toggles — only when expanded */}
           <div
-            className="flex gap-2 px-3 overflow-hidden"
+            className="overflow-hidden"
             style={{
-              maxHeight:  collapsed ? '0px'  : '48px',
-              opacity:    collapsed ? 0      : 1,
-              marginTop:  collapsed ? '0'    : '0.5rem',
-              transition: 'max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease',
+              maxHeight:  collapsed ? '0px' : '44px',
+              opacity:    collapsed ? 0 : 1,
+              transition: 'max-height 0.25s ease, opacity 0.18s ease',
             }}
           >
-            <ThemeToggle />
-            <LanguageToggle />
+            <div className="flex gap-2 px-1 pt-1">
+              <ThemeToggle />
+              <LanguageToggle />
+            </div>
           </div>
+
+          {/* Divider */}
+          <div className="h-px bg-dark-border mx-1" />
 
           {/* User card */}
-          <div
-            className="flex items-center gap-3 mt-3 rounded-xl bg-dark-card border border-dark-border overflow-hidden"
-            style={{
-              padding:    collapsed ? '0.625rem 0' : '0.625rem 0.75rem',
-              justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'padding 0.3s cubic-bezier(0.4,0,0.2,1)',
-            }}
-          >
-            {user?.avatar?.url ? (
-              <img src={user.avatar.url} alt="avatar"
-                className="w-8 h-8 rounded-full object-cover shrink-0 transition-transform duration-200 hover:scale-105" />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500
-                              flex items-center justify-center text-white text-xs font-bold shrink-0
-                              transition-transform duration-200 hover:scale-105">
-                {user?.fullname?.[0]?.toUpperCase() || 'U'}
-              </div>
-            )}
+          {collapsed ? (
+            /* Collapsed: just avatar centered with tooltip */
+            <Tooltip label={user?.fullname || 'Account'}>
+              <button
+                onClick={handleLogout}
+                className="h-10 w-10 mx-auto flex items-center justify-center rounded-xl
+                           hover:bg-red-500/10 transition-colors group"
+                title="Sign out"
+              >
+                {user?.avatar?.url ? (
+                  <img src={user.avatar.url} alt="avatar"
+                    className="w-7 h-7 rounded-full object-cover ring-2 ring-primary-500/20" />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-accent-500
+                                  flex items-center justify-center text-white text-[11px] font-black
+                                  ring-2 ring-primary-500/20 group-hover:ring-red-500/30 transition-all">
+                    {user?.fullname?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                )}
+              </button>
+            </Tooltip>
+          ) : (
+            /* Expanded: full user card */
+            <div className="flex items-center gap-2.5 px-2 py-2 rounded-xl
+                            bg-dark-card border border-dark-border
+                            hover:border-primary-500/20 transition-colors">
+              {/* Avatar */}
+              {user?.avatar?.url ? (
+                <img src={user.avatar.url} alt="avatar"
+                  className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-primary-500/20" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500
+                                flex items-center justify-center text-white text-xs font-black shrink-0
+                                ring-2 ring-primary-500/20">
+                  {user?.fullname?.[0]?.toUpperCase() || 'U'}
+                </div>
+              )}
 
-            <div
-              className="flex-1 min-w-0 overflow-hidden"
-              style={{
-                maxWidth:   collapsed ? '0px'   : '160px',
-                opacity:    collapsed ? 0       : 1,
-                transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-              }}
-            >
-              <p className="text-sm font-semibold text-white truncate">{user?.fullname}</p>
-              <div className="flex items-center gap-1 mt-0.5">
-                {user?.plan === 'premium' ? <Crown size={10} className="text-amber-400" /> :
-                 user?.plan === 'pro'     ? <Zap   size={10} className="text-primary-400" /> : null}
-                <Badge variant={planColors[user?.plan] || 'ghost'} className="capitalize text-[10px] py-0">
-                  {user?.plan}
-                </Badge>
+              {/* Name + plan */}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white truncate leading-none mb-1">
+                  {user?.fullname || 'User'}
+                </p>
+                <div className="flex items-center gap-1">
+                  {PlanIcon && <PlanIcon size={9} className={PLAN_COLOR[user?.plan]} />}
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    {PLAN_LABEL[user?.plan] || 'Free'}
+                  </span>
+                </div>
               </div>
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                title="Sign out"
+                className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg
+                           text-slate-600 hover:text-red-400 hover:bg-red-500/10
+                           active:scale-95 transition-all"
+              >
+                <LogOut size={13} />
+              </button>
             </div>
+          )}
 
+          {/* Collapse / Expand toggle */}
+          {collapsed ? (
+            <Tooltip label="Expand sidebar">
+              <button
+                onClick={() => setCollapsed(false)}
+                className="h-10 w-10 mx-auto flex items-center justify-center rounded-xl
+                           text-slate-600 hover:text-slate-300 hover:bg-white/[0.04]
+                           active:scale-95 transition-all"
+              >
+                <ChevronRight size={15} />
+              </button>
+            </Tooltip>
+          ) : (
             <button
-              onClick={handleLogout}
-              className="text-slate-500 hover:text-red-400 transition-colors duration-150 shrink-0 overflow-hidden"
-              style={{
-                maxWidth:   collapsed ? '0px'   : '24px',
-                opacity:    collapsed ? 0       : 1,
-                transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-              }}
+              onClick={() => setCollapsed(true)}
+              className="flex items-center gap-2 h-9 px-2 rounded-xl w-full
+                         text-slate-600 hover:text-slate-300 hover:bg-white/[0.04]
+                         active:scale-95 transition-all text-xs font-medium"
             >
-              <LogOut size={15} />
+              <ChevronLeft size={14} />
+              <span>Collapse</span>
             </button>
-          </div>
-
-          {/* Collapse toggle */}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center justify-center w-full mt-2 py-2 rounded-xl
-                       text-slate-500 hover:text-white hover:bg-white/5
-                       transition-colors duration-150 text-xs gap-1 group overflow-hidden"
-          >
-            {/* Single arrow that rotates 180° */}
-            <ChevronRight
-              size={16}
-              className="transition-transform duration-300 group-hover:text-primary-400"
-              style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
-            />
-            <span
-              className="whitespace-nowrap overflow-hidden"
-              style={{
-                maxWidth:   collapsed ? '0px'   : '80px',
-                opacity:    collapsed ? 0       : 1,
-                transition: 'max-width 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease',
-              }}
-            >
-              Collapse
-            </span>
-          </button>
+          )}
         </div>
       </aside>
 
-      {/* ═══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           MOBILE BOTTOM NAV
-          ═══════════════════════════════════════════ */}
+          ══════════════════════════════════════════════════════ */}
       <nav className="mobile-nav-enter md:hidden fixed bottom-0 left-0 right-0 z-50
-                      bg-dark-surface/95 backdrop-blur-md border-t border-dark-border
+                      bg-dark-surface/95 backdrop-blur-xl border-t border-dark-border
                       flex items-stretch">
-        {allMobileItems.map(({ to, icon: Icon, label }) => {
+        {allMobile.map(({ to, icon: Icon, label }) => {
           const active = isActive(to);
           return (
             <Link
@@ -295,12 +331,12 @@ export default function Sidebar() {
                          py-2 px-1 min-h-[56px] transition-colors duration-150"
               style={{ color: active ? '#a78bfa' : '#475569' }}
             >
-              {/* Active background pill */}
+              {/* Active pill bg */}
               <span
                 className="absolute inset-x-1.5 inset-y-1 rounded-xl"
                 style={{
                   background: active ? 'rgba(124,58,237,0.12)' : 'transparent',
-                  transition: 'background 0.25s ease',
+                  transition: 'background 0.2s ease',
                 }}
               />
 
@@ -308,24 +344,25 @@ export default function Sidebar() {
               <Icon
                 size={20}
                 strokeWidth={active ? 2.5 : 1.8}
-                className="relative z-10 transition-transform duration-200"
-                style={{ transform: active ? 'scale(1.15) translateY(-1px)' : 'scale(1)' }}
+                className="relative z-10"
+                style={{
+                  transform:  active ? 'scale(1.15) translateY(-1px)' : 'scale(1)',
+                  transition: 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+                }}
               />
 
               {/* Label */}
-              <span
-                className="relative z-10 text-[10px] font-medium leading-none transition-all duration-200"
-                style={{ color: active ? '#a78bfa' : '#475569' }}
-              >
+              <span className="relative z-10 text-[10px] font-semibold leading-none">
                 {label}
               </span>
 
               {/* Top pip indicator */}
               <span
-                className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-b-full bg-primary-400"
+                className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-b-full
+                           bg-gradient-to-r from-primary-400 to-violet-400"
                 style={{
-                  width:      active ? '24px'  : '0px',
-                  opacity:    active ? 1       : 0,
+                  width:      active ? '22px' : '0px',
+                  opacity:    active ? 1 : 0,
                   transition: 'width 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease',
                 }}
               />

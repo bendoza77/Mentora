@@ -110,7 +110,9 @@ function AILine({ line, idx }) {
 function UserMessage({ text }) {
   return (
     <div className="flex justify-end slide-from-right">
-      <div className="bg-primary-600/85 text-white text-sm px-4 py-3 rounded-2xl rounded-tr-sm max-w-[78%] leading-relaxed shadow-sm">
+      <div className="bg-gradient-to-br from-primary-600 to-violet-600
+                      text-white text-sm px-4 py-3 rounded-2xl rounded-tr-sm max-w-[78%]
+                      leading-relaxed shadow-md shadow-primary-600/20">
         {text}
       </div>
     </div>
@@ -129,31 +131,33 @@ function AIMessage({ text, isStreaming }) {
   return (
     <div className="flex gap-3 items-start group slide-from-left">
       {/* Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0 mt-0.5 shadow-md">
+      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500
+                      flex items-center justify-center shrink-0 mt-0.5
+                      shadow-md shadow-primary-600/20">
         <Sparkles size={13} className="text-white" />
       </div>
 
       {/* Bubble */}
       <div className="flex-1 max-w-[88%]">
-        <div className="glass rounded-2xl rounded-tl-sm px-4 py-4 space-y-0.5 relative">
+        <div className="glass rounded-2xl rounded-tl-sm px-4 py-4 space-y-0.5 relative
+                        border border-primary-500/10">
           {text.split('\n').map((line, i) => (
             <AILine key={i} line={line} idx={i} />
           ))}
-
-          {/* Blinking cursor while streaming */}
           {isStreaming && (
             <span className="inline-block w-[2px] h-4 bg-primary-400 ml-1 animate-pulse align-middle" />
           )}
         </div>
 
-        {/* Copy button (only when done streaming) */}
+        {/* Copy button */}
         {!isStreaming && (
           <button
             onClick={copyText}
-            className="mt-1.5 ml-1 flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-400 transition-colors opacity-0 group-hover:opacity-100"
+            className="mt-1.5 ml-1 flex items-center gap-1.5 text-[11px] text-slate-600
+                       hover:text-slate-400 transition-colors opacity-0 group-hover:opacity-100"
           >
             {copied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
-            {copied ? 'Copied' : 'Copy'}
+            {copied ? 'Copied!' : 'Copy response'}
           </button>
         )}
       </div>
@@ -163,21 +167,21 @@ function AIMessage({ text, isStreaming }) {
 
 function ThinkingBubble() {
   return (
-    <div className="flex gap-3 items-center">
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0">
+    <div className="flex gap-3 items-center slide-from-left">
+      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0 shadow-lg shadow-primary-600/25">
         <Sparkles size={13} className="text-white animate-pulse" />
       </div>
-      <div className="glass rounded-2xl rounded-tl-sm px-4 py-3">
-        <div className="flex gap-1.5 items-center mb-1">
+      <div className="glass rounded-2xl rounded-tl-sm px-5 py-3.5 border border-primary-500/15">
+        <div className="flex gap-1.5 items-center">
           {[0, 1, 2].map(i => (
             <span
               key={i}
-              className="w-2 h-2 rounded-full bg-primary-400 animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
+              className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-bounce"
+              style={{ animationDelay: `${i * 0.18}s` }}
             />
           ))}
+          <p className="text-xs text-slate-500 ml-2">Mentora AI is thinking…</p>
         </div>
-        <p className="text-xs text-slate-500">Mentora AI is thinking…</p>
       </div>
     </div>
   );
@@ -185,17 +189,32 @@ function ThinkingBubble() {
 
 function WelcomeMessage({ user }) {
   return (
-    <div className="flex gap-3 items-start">
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0">
-        <Sparkles size={13} className="text-white" />
+    <div className="flex gap-3 items-start slide-from-left">
+      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shrink-0 shadow-lg shadow-primary-600/25 animate-pulse-glow">
+        <Sparkles size={15} className="text-white" />
       </div>
-      <div className="glass rounded-2xl rounded-tl-sm px-4 py-4 max-w-md">
+      <div className="glass rounded-2xl rounded-tl-sm px-5 py-5 max-w-lg border border-primary-500/15">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs font-bold text-primary-400 uppercase tracking-wider">Mentora AI</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online
+          </span>
+        </div>
         <p className="text-sm text-slate-200 leading-relaxed">
-          Hey{user?.fullname ? `, ${user.fullname.split(' ')[0]}` : ''}! 👋 I'm <span className="text-primary-300 font-semibold">Mentora AI</span> — your personal math tutor.
+          Hey{user?.fullname ? `, ${user.fullname.split(' ')[0]}` : ''}! 👋 I'm{' '}
+          <span className="text-primary-300 font-bold">Mentora AI</span> — your personal math tutor powered by Llama 3.3 70B.
         </p>
         <p className="text-sm text-slate-400 mt-2 leading-relaxed">
-          Ask me <span className="text-white">any math question</span> — I'll walk you through it step by step. I'm especially good at topics on the <span className="text-accent-300">Georgian National Exam</span>. 📐
+          Ask me <span className="text-white font-medium">any math question</span> — I'll walk you through it step by step with clear explanations. I specialise in topics from the{' '}
+          <span className="text-accent-300 font-medium">Georgian National Exam</span>. 📐
         </p>
+        <div className="flex flex-wrap gap-2 mt-3.5">
+          {['Step-by-step solutions', 'Instant explanations', 'Exam-focused topics'].map(f => (
+            <span key={f} className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-primary-600/15 text-primary-300 border border-primary-500/20">
+              ✓ {f}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -342,32 +361,35 @@ export default function AITutor() {
     <div className="flex flex-col h-full page-enter">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="slide-down flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-dark-border bg-dark-surface shrink-0 gap-3">
+      <div className="slide-down flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-dark-border bg-dark-surface shrink-0 gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center shadow-md">
-            <BrainCircuit size={18} className="text-white" />
+          <div className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500
+                          flex items-center justify-center shadow-lg shadow-primary-600/25 animate-pulse-glow">
+            <BrainCircuit size={17} className="text-white" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-sm sm:text-base font-bold text-white truncate">{t('tutor.title')}</h1>
+            <h1 className="text-sm font-black text-white truncate tracking-tight">{t('tutor.title')}</h1>
             <p className="text-xs text-emerald-400 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span className="truncate">{t('tutor.subtitle')}</span>
+              <span className="truncate font-medium">{t('tutor.subtitle')}</span>
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Badge variant="primary" className="hidden sm:flex">Llama 3.3 · 70B</Badge>
+          <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-primary-600/15 text-primary-300 border border-primary-500/20">
+            Llama 3.3 · 70B
+          </span>
 
           {/* Daily usage counter (free plan only) */}
           {isFree && dailyLimit !== null && (
-            <span className={`text-xs font-bold px-2 py-1 rounded-full border ${
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
               isLimited
-                ? 'bg-red-500/15 border-red-500/30 text-red-400'
+                ? 'bg-red-500/15 border-red-500/25 text-red-400'
                 : dailyUsed >= dailyLimit - 1
-                ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                ? 'bg-amber-500/15 border-amber-500/25 text-amber-400'
                 : 'bg-dark-card border-dark-border text-slate-400'
             }`}>
-              {dailyUsed}/{dailyLimit}
+              {dailyUsed}/{dailyLimit} uses
             </span>
           )}
 
@@ -375,7 +397,7 @@ export default function AITutor() {
             <button
               onClick={clear}
               title="Clear conversation"
-              className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
+              className="p-2 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95"
             >
               <Trash2 size={15} />
             </button>
@@ -384,13 +406,17 @@ export default function AITutor() {
       </div>
 
       {/* ── Quick prompts ───────────────────────────────────────────────────── */}
-      <div className="slide-down px-3 sm:px-6 py-2 sm:py-3 border-b border-dark-border bg-dark-surface/50 flex gap-2 overflow-x-auto no-scrollbar shrink-0" style={{ animationDelay: '60ms' }}>
+      <div className="slide-down px-3 sm:px-5 py-2.5 border-b border-dark-border bg-dark-surface/60
+                      flex gap-2 overflow-x-auto no-scrollbar shrink-0" style={{ animationDelay: '60ms' }}>
+        <span className="shrink-0 text-[11px] font-bold text-slate-600 flex items-center pr-1">Try:</span>
         {QUICK_PROMPTS.map(q => (
           <button
             key={q}
             onClick={() => send(q)}
             disabled={isStreaming}
-            className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border text-slate-400 hover:text-primary-300 hover:border-primary-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border
+                       text-slate-400 hover:text-primary-300 hover:border-primary-500/30 hover:bg-primary-600/8
+                       disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
           >
             {q}
           </button>
@@ -421,27 +447,33 @@ export default function AITutor() {
       </div>
 
       {/* ── Input area ──────────────────────────────────────────────────────── */}
-      <div className="slide-up px-3 sm:px-6 py-3 sm:py-4 border-t border-dark-border bg-dark-surface shrink-0" style={{ animationDelay: '80ms' }}>
+      <div className="slide-up px-3 sm:px-5 py-3 sm:py-4 border-t border-dark-border bg-dark-surface shrink-0" style={{ animationDelay: '80ms' }}>
 
         {/* Upgrade banner when daily limit is reached */}
         {isLimited && (
-          <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-primary-600/10 border border-primary-500/30">
+          <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl
+                          bg-gradient-to-r from-primary-600/12 to-violet-600/8 border border-primary-500/25">
             <div className="flex items-center gap-2.5">
-              <Lock size={15} className="text-primary-400 shrink-0" />
+              <div className="w-7 h-7 rounded-lg bg-primary-600/20 flex items-center justify-center shrink-0">
+                <Lock size={13} className="text-primary-400" />
+              </div>
               <p className="text-sm text-slate-300">
-                You've used all <span className="text-white font-semibold">{dailyLimit} free AI questions</span> for today.
+                You've used all <span className="text-white font-bold">{dailyLimit} free questions</span> for today.
               </p>
             </div>
             <Link
               to="/pricing"
-              className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary-600 to-accent-500 text-white text-xs font-bold hover:opacity-90 transition-opacity"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl
+                         bg-gradient-to-r from-primary-600 to-violet-600
+                         text-white text-xs font-bold hover:from-primary-500 hover:to-violet-500
+                         active:scale-95 transition-all shadow-sm shadow-primary-600/25"
             >
               <Zap size={11} /> Upgrade to Pro
             </Link>
           </div>
         )}
 
-        <div className="flex gap-3 items-end">
+        <div className="flex gap-2.5 items-end">
           <div className="flex-1 relative">
             <textarea
               value={input}
@@ -451,59 +483,69 @@ export default function AITutor() {
               rows={1}
               disabled={isLimited}
               style={{ resize: 'none' }}
-              className={`w-full bg-dark-card border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-all ${
+              className={`w-full rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-600
+                          focus:outline-none transition-all duration-200 ${
                 isLimited
-                  ? 'border-dark-border opacity-50 cursor-not-allowed'
-                  : 'border-dark-border focus:border-primary-500/50'
+                  ? 'bg-dark-card border border-dark-border opacity-50 cursor-not-allowed'
+                  : 'bg-dark-card border border-dark-border focus:border-primary-500/50 focus:bg-dark-card/80 focus:shadow-lg focus:shadow-primary-600/10'
               }`}
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 shrink-0">
             {/* Hint button */}
             <button
               onClick={() => send('Give me a hint for this problem')}
               disabled={isStreaming || history.length === 0 || isLimited}
               title="Ask for a hint"
-              className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400
+                         hover:bg-amber-500/20 disabled:opacity-25 disabled:cursor-not-allowed
+                         transition-all active:scale-95"
             >
-              <Lightbulb size={18} />
+              <Lightbulb size={17} />
             </button>
 
             {/* New problem button */}
             <button
               onClick={() => send('Give me a random 10th-grade math problem to practice')}
               disabled={isStreaming || isLimited}
-              title="Give me a random problem"
-              className="p-3 rounded-xl bg-accent-500/10 border border-accent-500/20 text-accent-400 hover:bg-accent-500/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Random problem"
+              className="p-2.5 rounded-xl bg-accent-500/10 border border-accent-500/20 text-accent-400
+                         hover:bg-accent-500/20 disabled:opacity-25 disabled:cursor-not-allowed
+                         transition-all active:scale-95"
             >
-              <RefreshCw size={18} />
+              <RefreshCw size={17} />
             </button>
 
             {/* Send / Stop */}
             {isStreaming ? (
               <button
                 onClick={() => { abortRef.current?.abort(); setIsStreaming(false); setStreaming(''); }}
-                className="px-4 py-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 text-sm font-medium transition-all"
+                className="px-4 py-2.5 rounded-xl bg-red-500/15 border border-red-500/25 text-red-400
+                           hover:bg-red-500/25 text-sm font-semibold transition-all active:scale-95"
               >
                 Stop
               </button>
             ) : (
-              <Button
-                variant="gradient"
-                size="md"
+              <button
                 onClick={() => send()}
                 disabled={!input.trim() || isLimited}
-                icon={<Send size={16} />}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white
+                           bg-gradient-to-r from-primary-600 to-violet-600
+                           hover:from-primary-500 hover:to-violet-500
+                           disabled:opacity-30 disabled:cursor-not-allowed
+                           hover:shadow-lg hover:shadow-primary-600/25
+                           active:scale-95 transition-all duration-200"
               >
+                <Send size={15} />
                 <span className="hidden sm:inline">{t('tutor.send')}</span>
-              </Button>
+              </button>
             )}
           </div>
         </div>
 
         <p className="text-[11px] text-slate-700 mt-2 text-center">
-          Mentora AI · Enter to send · Shift+Enter for new line · Powered by Llama 3.3 70B via Groq
+          Enter to send · Shift+Enter for new line · Powered by Llama 3.3 70B via Groq
         </p>
       </div>
     </div>
