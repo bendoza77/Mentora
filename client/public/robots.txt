@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /blog
+Allow: /careers
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /features
+Allow: /how-it-works
+Allow: /pricing
+
+# Block app pages — no value for search engines
+Disallow: /dashboard
+Disallow: /tutor
+Disallow: /exam
+Disallow: /analytics
+Disallow: /practice
+Disallow: /settings
+Disallow: /purchase
+
+# Block auth pages
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://mentora.com.ge/sitemap.xml

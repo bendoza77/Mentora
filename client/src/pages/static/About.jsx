@@ -1,6 +1,6 @@
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { BrainCircuit, Target, Globe, Users, TrendingUp, Heart, Sparkles, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -47,7 +47,11 @@ const STATS = [
 ];
 
 export default function About() {
-  usePageTitle('About');
+  useSEO({
+    title: 'About Mentora AI — Our Mission to Transform Georgian Education',
+    description: 'We are Georgian students who struggled with exam prep. Mentora AI was built to give every student access to world-class AI tutoring for the national exam.',
+    path: '/about',
+  });
   const hero    = useInView();
   const stats   = useInView();
   const mission = useInView();

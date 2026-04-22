@@ -10,7 +10,7 @@ import ThemeToggle from '../components/ui/ThemeToggle';
 import LanguageToggle from '../components/ui/LanguageToggle';
 import TestimonialSlider from '../components/ui/TestimonialSlider';
 import clsx from 'clsx';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
@@ -123,7 +123,7 @@ function SuccessScreen({ user }) {
 
 /* ─────────────────────────── main ────────────────────────────── */
 export default function Login() {
-  usePageTitle('Sign In');
+  useSEO({ title: 'Sign In', path: '/login', noindex: true });
   const { login, loginWithGoogle, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

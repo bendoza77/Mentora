@@ -1,0 +1,28 @@
+{
+  "name": "Mentora AI",
+  "short_name": "Mentora",
+  "description": "AI-powered exam preparation for Georgian national exams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070712",
+  "theme_color": "#7c3aed",
+  "lang": "ka",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "Mentora AI — Exam Preparation Dashboard"
+    }
+  ]
+}

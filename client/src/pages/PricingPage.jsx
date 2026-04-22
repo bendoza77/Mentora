@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import StaticLayout from '../components/layout/StaticLayout';
 import useInView from '../hooks/useInView';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 import {
   Check, X, Zap, Crown, Star, Shield, Users,
   Flame, ArrowRight, Sparkles, ChevronDown, BarChart3,
@@ -369,7 +369,11 @@ function PlanCard({ plan, annual, visible, idx }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function PricingPage() {
-  usePageTitle('Pricing');
+  useSEO({
+    title: 'Pricing — Plans Starting Free for Georgian Students',
+    description: 'Mentora AI offers a free plan plus affordable Pro (₾19/mo) and Premium (₾35/mo) plans. Start free, upgrade when you need unlimited AI tutoring and exam simulations.',
+    path: '/pricing',
+  });
   const [annual, setAnnual] = useState(false);
 
   const hero    = useInView();

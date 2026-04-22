@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { Mail, MessageSquare, Building2, HelpCircle, Send, CheckCircle, MapPin, Clock } from 'lucide-react';
 
 const reveal = (inView, delay = 0) => ({
@@ -36,7 +36,11 @@ const INFO_ITEMS = [
 ];
 
 export default function Contact() {
-  usePageTitle('Contact');
+  useSEO({
+    title: 'Contact Us — We Reply Within 24 Hours',
+    description: 'Reach out to the Mentora AI team for support, school partnerships, or press inquiries. We\'re based in Tbilisi and reply within 24 hours.',
+    path: '/contact',
+  });
   const [topic, setTopic] = useState('support');
   const [sent, setSent]   = useState(false);
   const [form, setForm]   = useState({ name: '', email: '', message: '' });

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import StaticLayout from '../components/layout/StaticLayout';
 import useInView from '../hooks/useInView';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 import {
   BrainCircuit, Target, BarChart3, ClipboardCheck, Zap, Globe,
   ArrowRight, CheckCircle2, Sparkles, BookOpen, Clock, Trophy,
@@ -112,7 +112,11 @@ const DEEP_DIVES = [
 ];
 
 export default function Features() {
-  usePageTitle('Features');
+  useSEO({
+    title: 'Features — AI Tutoring, Exam Simulation & Smart Practice',
+    description: 'Discover all Mentora AI features: AI-powered math tutoring, realistic ENT exam simulations, personalized practice, weakness analytics, and step-by-step solutions.',
+    path: '/features',
+  });
   const hero    = useInView();
   const stats   = useInView();
   const grid    = useInView();

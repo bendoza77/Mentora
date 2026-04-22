@@ -1,6 +1,6 @@
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { FileText } from 'lucide-react';
 
 const SECTIONS = [
@@ -72,7 +72,11 @@ const SECTIONS = [
 ];
 
 export default function Terms() {
-  usePageTitle('Terms of Service');
+  useSEO({
+    title: 'Terms of Service',
+    description: 'Read Mentora AI\'s terms of service governing your use of our AI-powered exam preparation platform.',
+    path: '/terms',
+  });
   const hero    = useInView();
   const content = useInView();
 

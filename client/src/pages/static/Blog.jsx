@@ -1,6 +1,6 @@
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { ArrowRight, Clock, Tag } from 'lucide-react';
 import { useState } from 'react';
 
@@ -58,7 +58,11 @@ const POSTS = [
 const CATEGORIES = ['All', 'Study Tips', 'AI & Education', 'Math Explained', 'Product', 'Student Stories'];
 
 export default function Blog() {
-  usePageTitle('Blog');
+  useSEO({
+    title: 'Blog — Exam Tips, Math Guides & Study Strategies',
+    description: 'Expert articles on Georgian national exam prep: math problem breakdowns, study strategies, score analysis, and AI tutoring tips from the Mentora team.',
+    path: '/blog',
+  });
   const [featured, ...rest] = POSTS;
   const [activeCategory, setActiveCategory] = useState('All');
   const hero    = useInView();

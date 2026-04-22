@@ -1,6 +1,6 @@
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { MapPin, Clock, ArrowRight, Sparkles, Users, TrendingUp, Heart, Zap } from 'lucide-react';
 
 const reveal = (inView, delay = 0) => ({
@@ -39,7 +39,11 @@ const teamColors = {
 };
 
 export default function Careers() {
-  usePageTitle('Careers');
+  useSEO({
+    title: 'Careers — Join the Team Building Georgia\'s Future of Education',
+    description: 'Join Mentora AI and help transform how Georgian students prepare for national exams. Open roles in engineering, design, growth, and education.',
+    path: '/careers',
+  });
   const hero     = useInView();
   const perks    = useInView();
   const openings = useInView();

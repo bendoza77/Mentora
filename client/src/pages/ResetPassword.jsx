@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { BrainCircuit, Lock, Eye, EyeOff, ArrowRight, CheckCircle2, ShieldAlert } from 'lucide-react';
 import clsx from 'clsx';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import LanguageToggle from '../components/ui/LanguageToggle';
 
@@ -79,7 +79,7 @@ function StrengthBar({ password }) {
 }
 
 export default function ResetPassword() {
-  usePageTitle('Reset Password');
+  useSEO({ title: 'Reset Password', path: '/reset-password', noindex: true });
 
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');

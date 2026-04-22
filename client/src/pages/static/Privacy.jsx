@@ -1,6 +1,6 @@
 import StaticLayout from '../../components/layout/StaticLayout';
 import useInView from '../../hooks/useInView';
-import usePageTitle from '../../hooks/usePageTitle';
+import useSEO from '../../hooks/useSEO';
 import { Shield } from 'lucide-react';
 
 const SECTIONS = [
@@ -70,7 +70,11 @@ const SECTIONS = [
 ];
 
 export default function Privacy() {
-  usePageTitle('Privacy Policy');
+  useSEO({
+    title: 'Privacy Policy',
+    description: 'Read Mentora AI\'s privacy policy to understand how we collect, use, and protect your data in compliance with Georgian data protection law.',
+    path: '/privacy',
+  });
   const hero     = useInView();
   const content  = useInView();
 

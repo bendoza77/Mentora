@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import StaticLayout from '../components/layout/StaticLayout';
 import useInView from '../hooks/useInView';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 import {
   ScanSearch, BrainCircuit, ClipboardCheck, ArrowRight, Sparkles,
   CheckCircle2, ChevronDown, Zap, BarChart3, Target, Clock,
@@ -99,7 +99,11 @@ function FAQ({ q, a }) {
 }
 
 export default function HowItWorksPage() {
-  usePageTitle('How It Works');
+  useSEO({
+    title: 'How It Works — Start Improving Your Score in 3 Steps',
+    description: 'Learn how Mentora AI works: sign up free, practice with AI-generated problems tailored to your level, then simulate the real Georgian national exam.',
+    path: '/how-it-works',
+  });
   const hero     = useInView();
   const step0    = useInView();
   const step1    = useInView();

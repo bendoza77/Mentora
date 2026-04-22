@@ -10,7 +10,7 @@ import ThemeToggle from '../components/ui/ThemeToggle';
 import LanguageToggle from '../components/ui/LanguageToggle';
 import TestimonialSlider from '../components/ui/TestimonialSlider';
 import clsx from 'clsx';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 
 /* ─── Google Icon ─── */
 const GoogleIcon = () => (
@@ -163,7 +163,12 @@ function PasswordStrength({ password }) {
 
 /* ─── Main ─── */
 export default function Register() {
-  usePageTitle('Get Started');
+  useSEO({
+    title: 'Get Started Free — Create Your Mentora AI Account',
+    description: 'Sign up free and start improving your Georgian national exam score today. No credit card required.',
+    path: '/register',
+    noindex: true,
+  });
   const { login, register, loginWithGoogle, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

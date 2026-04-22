@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BrainCircuit, Mail, ArrowRight, ArrowLeft, CheckCircle2, KeyRound } from 'lucide-react';
 import clsx from 'clsx';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import LanguageToggle from '../components/ui/LanguageToggle';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function ForgotPassword() {
-  usePageTitle('Forgot Password');
+  useSEO({ title: 'Forgot Password', path: '/forgot-password', noindex: true });
 
   const [email,   setEmail]   = useState('');
   const [error,   setError]   = useState('');

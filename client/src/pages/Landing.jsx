@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react';
 import Hero from '../components/landing/Hero';
-import usePageTitle from '../hooks/usePageTitle';
+import useSEO from '../hooks/useSEO';
 
 // Below-fold sections are lazy loaded — Hero renders immediately,
 // the rest arrive in a separate chunk after the main content is painted.
@@ -19,7 +19,11 @@ function SectionSkeleton() {
 }
 
 export default function Landing() {
-  usePageTitle();
+  useSEO({
+    title: 'AI-Powered Exam Prep for Georgian Students',
+    description: 'Mentora AI helps Georgian students ace national exams with AI-powered math tutoring, step-by-step solutions, personalized practice, and realistic exam simulations.',
+    path: '/',
+  });
   return (
     <main>
       <Hero />
